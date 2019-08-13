@@ -1,0 +1,39 @@
+<h2>Log in</h2>
+
+<%= form_for(resource, as: resource_name, url: session_path(resource_name)) do |f| %>
+  <div class="field">
+    <%= f.label :email %><br />
+    <%= f.email_field :email, autofocus: true, autocomplete: "email" %>
+  </div>
+
+  <div class="field">
+    <%= f.label :password %><br />
+    <%= f.password_field :password, autocomplete: "current-password" %>
+  </div>
+
+  <% if devise_mapping.rememberable? %>
+    <div class="field">
+      <%= f.check_box :remember_me %>
+      <%= f.label :remember_me %>
+    </div>
+  <% end %>
+
+  <div class="actions">
+    <%= f.submit "Log in" %>
+  </div>
+<% end %>
+
+TODO <br>
+- ユーザ生成時にAPIキー作成<br>
+- 追加情報として以下を入力できるように<br>
+&emsp;- SBI認証情報<br>
+&emsp;- 通知用SlackURL<br>
+- APIキーでのアクセス時には認証情報を使ってBot操作ができるようにする<br>
+- 画面を作成<br>
+&emsp;- トップ画面<br>
+&emsp;- 株view<br>
+&emsp;- bot設定画面（通知先含めて）<br>
+&emsp;- SBI認証情報<br>
+<br>
+
+<%= render "users/shared/links" %>
