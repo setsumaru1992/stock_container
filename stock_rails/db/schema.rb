@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2019_08_12_151211) do
+ActiveRecord::Schema.define(version: 2019_08_18_093330) do
 
   create_table "api_keys", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
     t.bigint "user_id"
@@ -22,7 +22,7 @@ ActiveRecord::Schema.define(version: 2019_08_12_151211) do
 
   create_table "bot_notice_slacks", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
     t.bigint "user_id"
-    t.string "slack_url", null: false
+    t.string "slack_url", default: "", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["user_id"], name: "index_bot_notice_slacks_on_user_id"
@@ -30,11 +30,73 @@ ActiveRecord::Schema.define(version: 2019_08_12_151211) do
 
   create_table "sbi_credentials", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
     t.bigint "user_id"
-    t.string "user_name", null: false
-    t.string "read_password", null: false
+    t.string "user_name", default: "", null: false
+    t.string "read_password", default: "", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["user_id"], name: "index_sbi_credentials_on_user_id"
+  end
+
+  create_table "stock_conditions", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
+    t.bigint "stock_id"
+    t.text "feature"
+    t.text "trend"
+    t.text "current_strategy"
+    t.integer "category_rank"
+    t.string "big_stock_holder"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["stock_id"], name: "index_stock_conditions_on_stock_id"
+  end
+
+  create_table "stock_financial_conditions", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
+    t.bigint "stock_id"
+    t.integer "market_capitalization"
+    t.integer "buy_unit"
+    t.boolean "is_nikkei_average_group"
+    t.integer "total_asset"
+    t.integer "shareholder_equity"
+    t.integer "common_share"
+    t.integer "retained_earnings"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["stock_id"], name: "index_stock_financial_conditions_on_stock_id"
+  end
+
+  create_table "stock_performances", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
+    t.bigint "stock_id"
+    t.integer "year"
+    t.integer "month"
+    t.integer "net_sales"
+    t.integer "operating_income"
+    t.integer "ordinary_income"
+    t.integer "net_income"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["stock_id"], name: "index_stock_performances_on_stock_id"
+  end
+
+  create_table "stock_prices", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
+    t.bigint "stock_id"
+    t.date "day"
+    t.integer "price"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["stock_id"], name: "index_stock_prices_on_stock_id"
+  end
+
+  create_table "stocks", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
+    t.integer "code"
+    t.string "name"
+    t.string "kana"
+    t.string "industry_name"
+    t.integer "settlement_month"
+    t.integer "established_year"
+    t.integer "listed_year"
+    t.integer "listed_month"
+    t.string "category"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
   end
 
   create_table "users", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
@@ -64,4 +126,8 @@ ActiveRecord::Schema.define(version: 2019_08_12_151211) do
   add_foreign_key "api_keys", "users"
   add_foreign_key "bot_notice_slacks", "users"
   add_foreign_key "sbi_credentials", "users"
+  add_foreign_key "stock_conditions", "stocks"
+  add_foreign_key "stock_financial_conditions", "stocks"
+  add_foreign_key "stock_performances", "stocks"
+  add_foreign_key "stock_prices", "stocks"
 end

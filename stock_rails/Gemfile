@@ -9,9 +9,14 @@ gem 'rails', '~> 5.2.3'
 gem 'selenium-webdriver'
 
 gem 'mysql2'
+
 gem 'dotenv'
 gem 'dotenv-rails'
+
 gem 'devise'
+
+gem 'mini_magick'
+gem 'carrierwave'
 
 # rails console をpryにするため
 gem "pry-rails"

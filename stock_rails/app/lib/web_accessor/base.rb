@@ -22,8 +22,8 @@ module WebAccessor
       options = Selenium::WebDriver::Chrome::Options.new
       options.headless! if headless?
       client = Selenium::WebDriver::Remote::Http::Default.new
-      client.open_timeout = 240
-      client.read_timeout = 240
+      client.open_timeout = 300
+      client.read_timeout = 300
       Selenium::WebDriver.for(:chrome, options: options, :http_client => client)
     end
 
@@ -57,6 +57,16 @@ module WebAccessor
         yield(text)
       else
         text
+      end
+    end
+
+    def click_js_trigger(target_element: nil, by: :xpath, selector: nil, wait_target_by: :tag_name, wait_target_selector: "body")
+      target = target_element || @accessor
+      element = target.find_element(by, selector)
+      element.click
+      sleep(1)
+      ::Selenium::WebDriver::Wait.new(timeout: 300).until do
+        @accessor.find_element(wait_target_by, wait_target_selector).displayed?
       end
     end
   end
