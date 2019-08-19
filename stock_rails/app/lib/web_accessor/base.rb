@@ -20,7 +20,10 @@ module WebAccessor
 
     def gen_accessor
       options = Selenium::WebDriver::Chrome::Options.new
-      options.headless! if headless?
+      if headless?
+        options.headless!
+        options.add_argument("--no-sandbox")
+      end
       client = Selenium::WebDriver::Remote::Http::Default.new
       client.open_timeout = 300
       client.read_timeout = 300
