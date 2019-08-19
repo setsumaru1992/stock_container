@@ -5,4 +5,8 @@ class BotController < ApplicationController
       status: "success"
     }
   end
+
+  def regist_stock_prices
+
+  end
 end
