@@ -12,7 +12,71 @@ module WebAccessor::Sbi
       price
     end
 
-    def get_prices_of_stocks
+    def get_portfolio_stock_prices
+      raise "The logic needs credentials." unless @need_credential
+      result_stock_prices = []
+      access do |accessor|
+        visit("https://site2.sbisec.co.jp/ETGate/?_ControlID=WPLETpfR001Control&_PageID=DefaultPID&_DataStoreID=DSWPLETpfR001Control&_ActionID=DefaultAID&getFlg=on")
+        portfolio_rows = accessor.find_elements(:xpath, "/html/body/div[3]/div/table/tbody/tr/td/table[4]/tbody/tr[2]/td/table/tbody/tr")
+        return if portfolio_rows.size <= 1 # ヘッダをのぞいて1つ以上行がない場合処理終了
+
+        result_stock_prices = portfolio_rows[1..-1].map do |portfolio_row|
+          stock_price = StockPriceValue.new
+          stock_price.code = get_content(target_element: portfolio_row, selector: "./td[2]") do |content|
+            matched = content.match(/\d+/)
+            if matched.nil?
+              # 海外株式の場合
+              nil
+            else
+              matched[1].to_i
+            end
+          end
+          next if stock_price.code.nil?
+          stock_price.reference_price = get_content(target_element: portfolio_row, selector: "./td[5]") do |content|
+            if content == "--"
+              nil
+            else
+              content.gsub(",", "").to_i
+            end
+          end
+          stock_price.price = get_content(target_element: portfolio_row, selector: "./td[6]") do |content|
+            content.gsub(",", "").to_i
+          end
+          stock_price
+        end.compact
+      end
+      result_stock_prices
+    end
+
+    def get_bought_stock_prices
+      raise "The logic needs credentials." unless @need_credential
+      result_stock_prices = []
+      access do |accessor|
+        visit("https://site2.sbisec.co.jp/ETGate/?OutSide=on&_ControlID=WPLETacR001Control&_PageID=DefaultPID&_DataStoreID=DSWPLETacR001Control&_SeqNo=2003_06_12_10_02_34.574_ExecuteThread%3A__45__for_queue%3A__wplExecute_Queue__WPLETlgR001Rlgn20_login&getFlg=on&_ActionID=DefaultAID&int_pr1=150313_cmn_gnavi:2_dmenu_01")
+        bought_rows = accessor.find_elements(:xpath, "//form[@name='FORM']/table[2]/tbody/tr[1]/td[2]/table[5]/tbody/tr/td[3]/table[4]/tbody/tr")
+        return if bought_rows.size <= 2
+        bought_rows.in_groups_of(2).each do |name_row, price_row|
+          stock_price = StockPriceValue.new
+          stock_price.code = get_content(target_element: name_row, selector: "./td") do |content|
+            content.match(/\d+/)[1].to_i
+          end
+          stock_price.reference_price = get_content(target_element: price_row, selector: "./td[2]") do |content|
+            if content == "--"
+              nil
+            else
+              content.gsub(",", "").to_i
+            end
+          end
+          stock_price.price = get_content(target_element: price_row, selector: "./td[3]") do |content|
+            content.gsub(",", "").to_i
+          end
+          stock_price
+        end
+      end
+      result_stock_prices
+    end
+
+    def get_stock_prices
       stock_values = []
       access do |accessor|
         visit("https://site2.sbisec.co.jp/ETGate/?_ControlID=WPLETsiR001Control&_PageID=WPLETsiR001Iser10&_DataStoreID=DSWPLETsiR001Control&_ActionID=goToStockPriceListByIndustry&OutSide=on")
@@ -36,11 +100,11 @@ module WebAccessor::Sbi
             stock_rows = accessor.find_elements(:xpath, "//*[@id='main']/table/tbody/tr/td/form/div[2]/div/table/tbody/tr")
             stock_rows.map do |stock_row|
               stock = StockPriceValue.new
-              stock.code = get_content(target_element: stock_row, selector: "./td[1]/div/p[2]") do |context|
-                context.match(/(\d+)/)[1].to_i
+              stock.code = get_content(target_element: stock_row, selector: "./td[1]/div/p[2]") do |content|
+                content.match(/(\d+)/)[1].to_i
               end
-              stock.price = get_content(target_element: stock_row, selector: "./td[2]/div/p") do |context|
-                context.gsub(",", "").to_i
+              stock.price = get_content(target_element: stock_row, selector: "./td[2]/div/p") do |content|
+                content.gsub(",", "").to_i
               end
               stock
             end

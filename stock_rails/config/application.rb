@@ -20,6 +20,7 @@ module StockRails
     # -- all .rb files in that directory are automatically loaded after loading
     # the framework and any gems in your application.
     config.autoload_paths += %W(#{config.root}/app/domains)
+    config.autoload_paths += %W(#{config.root}/app/slackers)
     config.autoload_paths += %W(#{config.root}/app/lib)
     config.time_zone = 'Asia/Tokyo'
     config.active_record.default_timezone = :local

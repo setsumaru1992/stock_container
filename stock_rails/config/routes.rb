@@ -7,5 +7,9 @@ Rails.application.routes.draw do
 
   namespace :bot do
     get    "regist_new_stocks"
+    get    "regist_or_update_stocks"
+    get    "regist_stock_prices"
+    get    "notice_bought_stock_prices"
+    get    "notice_bought_and_favorite_stocks_with_chart"
   end
 end
