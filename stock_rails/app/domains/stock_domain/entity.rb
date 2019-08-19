@@ -3,8 +3,8 @@ module StockDomain
     class << self
       def save_stocks_info(ignore_existing_stock_code: true)
         stock_values = ::WebAccessor::Sbi::StockInfo.new.get_stocks
-        codes = stock_values.map.(&:code)
-        codes = Repository.not_existing_stock_codes(codes) if ignore_existing_stock_code
+        codes = stock_values.map(&:code)
+        codes = ::StockDomain::Repository.not_existing_stock_codes(codes) if ignore_existing_stock_code
         codes.each do |code|
           entity = self.new(code)
           begin
@@ -13,6 +13,10 @@ module StockDomain
             Rails.logger.warn("証券番号#{code}の株情報の取得に失敗しました。")
           end
         end
+      end
+
+      def save_stocks_price
+        prices = ::WebAccessor::Sbi::StockPrice.new.get_prices_of_stocks
       end
     end
 
