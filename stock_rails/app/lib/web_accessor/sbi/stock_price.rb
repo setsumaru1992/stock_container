@@ -36,7 +36,7 @@ module WebAccessor::Sbi
             stock_rows = accessor.find_elements(:xpath, "//*[@id='main']/table/tbody/tr/td/form/div[2]/div/table/tbody/tr")
             stock_rows.map do |stock_row|
               stock = StockPriceValue.new
-              stock.stock_code = get_content(target_element: stock_row, selector: "./td[1]/div/p[2]") do |context|
+              stock.code = get_content(target_element: stock_row, selector: "./td[1]/div/p[2]") do |context|
                 context.match(/(\d+)/)[1].to_i
               end
               stock.price = get_content(target_element: stock_row, selector: "./td[2]/div/p") do |context|
@@ -63,6 +63,15 @@ module WebAccessor::Sbi
 
     def stock_price_page_url_of(stock_code)
       "https://site2.sbisec.co.jp/ETGate/?_ControlID=WPLETsiR001Control&_PageID=WPLETsiR001Idtl30&_DataStoreID=DSWPLETsiR001Control&_ActionID=DefaultAID&s_rkbn=&s_btype=&i_dom_flg=1&i_exchange_code=&i_output_type=2&exchange_code=TKY&ref_from=1&ref_to=20&wstm4130_sort_id=&wstm4130_sort_kbn=&qr_keyword=&qr_suggest=&qr_sort=&stock_sec_code_mul=#{stock_code}"
+    end
+
+    def stocks_url_of_industry(sample_industry_url, from, to)
+      uri = URI::parse(sample_industry_url)
+      params = URI::decode_www_form(uri.query).to_h
+      params["ref_from"] = from.to_s
+      params["ref_to"] = to.to_s
+      uri.query = URI::encode_www_form(params)
+      uri.to_s
     end
   end
 end

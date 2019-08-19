@@ -2,7 +2,7 @@ module WebAccessor::Sbi
   class StockPriceValue
     include Concerns::Hashable
 
-    attr_accessor :stock_code,
+    attr_accessor :code,
                   :price
   end
 end

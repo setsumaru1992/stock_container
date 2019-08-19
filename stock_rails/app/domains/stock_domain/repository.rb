@@ -17,18 +17,14 @@ module StockDomain::Repository
     end
 
     def create_or_update_stock_condition(attributes)
-      stock_condition = build_stock_condition_model(attributes[:code])
-      return if stock_condition.nil?
-
+      stock_condition = build_stock_condition_model(attributes[:code], return_existing: true)
       keys = [:feature, :trend, :current_strategy, :category_rank, :big_stock_holder]
       stock_condition = update_model_fields_by_attribute(stock_condition, attributes, keys)
       stock_condition.save!
     end
 
     def create_or_update_stock_financial_condition(attributes)
-      stock_financial_condition = build_stock_financial_condition_model(attributes[:code])
-      return if stock_financial_condition.nil?
-
+      stock_financial_condition = build_stock_financial_condition_model(attributes[:code], return_existing: true)
       keys = [:market_capitalization, :buy_unit, :is_nikkei_average_group, :total_asset, :shareholder_equity, :common_share, :retained_earnings]
       stock_financial_condition = update_model_fields_by_attribute(stock_financial_condition, attributes, keys)
       stock_financial_condition.save!
@@ -52,7 +48,7 @@ module StockDomain::Repository
       stock_price.save!
     end
 
-    # private
+    private
 
     def build_stock_model(code)
       ::Stock.find_or_create_by(code: code)

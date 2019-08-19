@@ -15,8 +15,32 @@ module StockDomain
         end
       end
 
-      def save_stocks_price
-        prices = ::WebAccessor::Sbi::StockPrice.new.get_prices_of_stocks
+      def save_price_of_stocks
+        day = day_of_price
+        return if weekend?(day)
+        stock_prices = ::WebAccessor::Sbi::StockPrice.new.get_prices_of_stocks
+
+        stock_prices.each do |stock_price|
+          entity = self.new(stock_price.code)
+          begin
+            entity.save_stock_price(price: stock_price.price, day: day)
+          rescue => e
+            Rails.logger.warn("証券番号#{stock_price.code}の株価の取得に失敗しました。")
+          end
+        end
+      end
+
+      def day_of_price
+        time = Time.now
+        if 0 <= time.hour && time.hour < 9
+          Date.today - 1.day
+        else
+          Date.today
+        end
+      end
+
+      def weekend?(day)
+        day.saturday? || day.sunday?
       end
     end
 
@@ -38,9 +62,11 @@ module StockDomain
       end
     end
 
-    def save_stock_price(price: nil)
+    def save_stock_price(price: nil, day: nil)
+      day ||= ::StockDomain::Entity.day_of_price
+      return if ::StockDomain::Entity.weekend?(day)
       price ||= ::WebAccessor::Sbi::StockPrice.new.get_price_of(@code)
-      day = Date.new - 1.day
+      Repository.create_stock_price(code: @code, day: day, price: price)
     end
   end
 end
