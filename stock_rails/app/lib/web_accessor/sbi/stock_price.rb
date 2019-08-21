@@ -23,7 +23,7 @@ module WebAccessor::Sbi
         result_stock_prices = portfolio_rows[1..-1].map do |portfolio_row|
           stock_price = StockPriceValue.new
           stock_price.code = get_content(target_element: portfolio_row, selector: "./td[2]") do |content|
-            matched = content.match(/\d+/)
+            matched = content.match(/(\d+)/)
             if matched.nil?
               # 海外株式の場合
               nil
@@ -53,19 +53,20 @@ module WebAccessor::Sbi
       result_stock_prices = []
       access do |accessor|
         visit("https://site2.sbisec.co.jp/ETGate/?OutSide=on&_ControlID=WPLETacR001Control&_PageID=DefaultPID&_DataStoreID=DSWPLETacR001Control&_SeqNo=2003_06_12_10_02_34.574_ExecuteThread%3A__45__for_queue%3A__wplExecute_Queue__WPLETlgR001Rlgn20_login&getFlg=on&_ActionID=DefaultAID&int_pr1=150313_cmn_gnavi:2_dmenu_01")
+        # 株式（現物/NISA預り）
+        # 保有株数    取得単価	  現在値	  評価損益
+        # 8002 丸紅                  	現買 現売
+        # 100	       672	    674.9	   +290
+        # 8002 丸紅...
         bought_rows = accessor.find_elements(:xpath, "//form[@name='FORM']/table[2]/tbody/tr[1]/td[2]/table[5]/tbody/tr/td[3]/table[4]/tbody/tr")
         return if bought_rows.size <= 2
-        bought_rows.in_groups_of(2).each do |name_row, price_row|
+        result_stock_prices = bought_rows[2..-1].in_groups_of(2).map do |name_row, price_row|
           stock_price = StockPriceValue.new
-          stock_price.code = get_content(target_element: name_row, selector: "./td") do |content|
-            content.match(/\d+/)[1].to_i
+          stock_price.code = get_content(target_element: name_row, selector: "./td[1]") do |content|
+            content.match(/(\d+)/)[1].to_i
           end
           stock_price.reference_price = get_content(target_element: price_row, selector: "./td[2]") do |content|
-            if content == "--"
-              nil
-            else
-              content.gsub(",", "").to_i
-            end
+            content.gsub(",", "").to_i
           end
           stock_price.price = get_content(target_element: price_row, selector: "./td[3]") do |content|
             content.gsub(",", "").to_i

@@ -28,8 +28,19 @@ class BotController < ApplicationController
       status: "success"
     }
     bought_stock_prices = ::StockDomain::Entity.get_bought_stock_prices(user_id_from(bot_params[:api_key]))
-    render json: response and return if bought_stock_prices.nil?
-    StockSlacker.new.notice_bought_stocks(bought_stock_prices)
+    render json: response and return if bought_stock_prices.empty?
+
+    bought_stock_values = bought_stock_prices.map do |stock_price_value|
+      code = stock_price_value.code
+      # ActiveRecordの直呼びはCQRSの観点から許容
+      value = StockSlackValue.new
+      value.stock_price_value = stock_price_value
+      value.stock = ::Stock.find_by(code: code)
+      value.stock_condition = value.stock.stock_conditions.first
+      value.stock_financial_condition = value.stock.stock_financial_conditions.first
+      value
+    end
+    StockSlacker.new.notice_bought_stocks(bought_stock_values)
     render json: response
   end
 
@@ -56,7 +67,7 @@ class BotController < ApplicationController
   end
 
   def rescue_error(e)
-    ErrorSlacker.new.notice(e.to_s)
+    ErrorSlacker.new.notice(e)
     raise e
   end
 end
