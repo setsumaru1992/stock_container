@@ -48,6 +48,6 @@ https://moyamoya.space/dailyutil/stockInfo/access2sbi_chart?stock_code=#{value.s
 
   def by_percent_of(percent, target)
     return "--" unless percent.kind_of?(Float) && target.kind_of?(Integer)
-    target - (target * percent).round
+    target + (target * percent).round
   end
 end
