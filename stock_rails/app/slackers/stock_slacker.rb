@@ -43,7 +43,7 @@ https://moyamoya.space/dailyutil/stockInfo/access2sbi_chart?stock_code=#{value.s
 
   def profit_rate(before, after)
     return "--" unless before.kind_of?(Integer) && after.kind_of?(Integer)
-    (after - before) / before
+    ((after - before).fdiv(before) * 100).round(1)
   end
 
   def by_percent_of(percent, target)
