@@ -50,6 +50,4 @@ https://moyamoya.space/dailyutil/stockInfo/access2sbi_chart?stock_code=#{value.s
     return "--" unless percent.kind_of?(Float) && target.kind_of?(Integer)
     target - (target * percent).round
   end
-
-  def settlement
 end
