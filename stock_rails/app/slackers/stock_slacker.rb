@@ -27,11 +27,11 @@ class StockSlacker < ApplicationSlacker
     end
   end
 
-  def notice_bought_and_favorite_stocks_with_chart(favorite_stock_values, bought_stock_values)
+  def notice_bought_and_favorite_stocks_with_chart(favorite_stock_values, bought_stock_values, request_url)
     notice("---- 保有株 ----")
     bought_stock_values.each do |value|
       begin
-        notice(bought_stock_message(value))
+        notice_with_image(bought_stock_message(value), parse_image_path_to_image_url(value.stock_price_value.chart_path, request_url))
       rescue => e
         ErrorSlacker.new.notice_error(e)
         notice("エラー発生")
@@ -44,7 +44,7 @@ class StockSlacker < ApplicationSlacker
       .sort_by {|favorite_stock_value| favorite_stock_value.stock_price_value.price}.reverse
       .each do |value|
       begin
-        notice(favorite_stock_message(value))
+        notice_with_image(favorite_stock_message(value), parse_image_path_to_image_url(value.stock_price_value.chart_path, request_url))
       rescue => e
         ErrorSlacker.new.notice_error(e)
         notice("エラー発生")
@@ -63,14 +63,13 @@ class StockSlacker < ApplicationSlacker
     price = stock_value.stock_price_value.price
     ref_price = stock_value.stock_price_value.reference_price
     <<-EOS
-【#{stock_value.stock.code} #{stock_value.stock.name}】
+【#{stock_value.stock.code} #{stock_value.stock.name}】#{stock_is_nikkei_average_group(stock_value)}
 (現在)#{price} (取得)#{ref_price}
 (利益)#{profit(ref_price, price)}(#{profit_rate(ref_price, price)}%)
 5%↑    #{by_percent_of(0.05, price)}  5%↓    #{by_percent_of(-0.05, price)}
 10%↑  #{by_percent_of(0.1, price)}  10%↓  #{by_percent_of(-0.1, price)}
 20%↑  #{by_percent_of(0.2, price)}  20%↓  #{by_percent_of(-0.2, price)}
 https://moyamoya.space/dailyutil/stockInfo/access2sbi_chart?stock_code=#{stock_value.stock.code}
-
 #{stock_detail_message(stock_value)}
     EOS
   end
@@ -79,14 +78,13 @@ https://moyamoya.space/dailyutil/stockInfo/access2sbi_chart?stock_code=#{stock_v
     price = stock_value.stock_price_value.price
     ref_price = stock_value.stock_price_value.reference_price
     <<-EOS
-【#{stock_value.stock.code} #{stock_value.stock.name}】
+【#{stock_value.stock.code} #{stock_value.stock.name}】#{stock_is_nikkei_average_group(stock_value)}
 (現在)#{price} (参考価格)#{ref_price}
 (差分)#{profit(ref_price, price)}(#{profit_rate(ref_price, price)}%)
 5%↑    #{by_percent_of(0.05, price)}
 10%↑  #{by_percent_of(0.1, price)}
 20%↑  #{by_percent_of(0.2, price)}
 https://moyamoya.space/dailyutil/stockInfo/access2sbi_chart?stock_code=#{stock_value.stock.code}
-
 #{stock_detail_message(stock_value)}
     EOS
   end
@@ -107,7 +105,7 @@ https://moyamoya.space/dailyutil/stockInfo/access2sbi_chart?stock_code=#{stock_v
   end
 
   def stock_detail_message(stock_value)
-    stock_feature(stock_value) + stock_is_nikkei_average_group(stock_value) + stock_settlement_months(stock_value) + "\n"
+    stock_feature(stock_value) + stock_settlement_months(stock_value) + "\n"
   end
 
   def stock_feature(stock_value)
@@ -119,7 +117,7 @@ https://moyamoya.space/dailyutil/stockInfo/access2sbi_chart?stock_code=#{stock_v
   def stock_is_nikkei_average_group(stock_value)
     is_nikkei_average_group = stock_value.try(:stock_financial_condition).try(:is_nikkei_average_group)
     return "" if is_nikkei_average_group.nil?
-    "日経225銘柄\n"
+    "日経225銘柄"
   end
 
   def stock_settlement_months(stock_value)
@@ -137,5 +135,10 @@ https://moyamoya.space/dailyutil/stockInfo/access2sbi_chart?stock_code=#{stock_v
       first_settlement_month + 9
     ]
     "決算：#{settlement_month}月(#{settlement_months.join(", ")}月)\n"
+  end
+
+  def parse_image_path_to_image_url(image_path, request_url)
+    path = image_path.gsub("/var/opt/stock_container/", "")
+    "#{request_url}/#{path}"
   end
 end

@@ -41,8 +41,8 @@ class BotController < ApplicationController
     response = {
       status: "success"
     }
-    bought_stock_prices = ::StockDomain::Entity.get_bought_stock_prices(user_id_from(bot_params[:api_key]))
-    favorite_stock_prices = ::StockDomain::Entity.get_favorite_stock_prices(user_id_from(bot_params[:api_key]))
+    bought_stock_prices = ::StockDomain::Entity.get_bought_stock_prices(user_id_from(bot_params[:api_key]), need_chart: true)
+    favorite_stock_prices = ::StockDomain::Entity.get_favorite_stock_prices(user_id_from(bot_params[:api_key]), need_chart: true)
 
     return render json: response if bought_stock_prices.empty? && favorite_stock_prices.empty?
 
@@ -52,7 +52,7 @@ class BotController < ApplicationController
     favorite_stock_values = favorite_stock_prices.map do |stock_price_value|
       ::StockSlacker.build_stock_slack_value(stock_price_value)
     end
-    StockSlacker.new.notice_bought_and_favorite_stocks_with_chart(favorite_stock_values, bought_stock_values)
+    StockSlacker.new.notice_bought_and_favorite_stocks_with_chart(favorite_stock_values, bought_stock_values, request.base_url)
     render json: response
   end
 

@@ -115,11 +115,26 @@ module WebAccessor::Sbi
       stock_values
     end
 
-    def get_concated_price_chart_image_path(stock_code, range_keys)
+    def get_price_chart_image_path_of(stock_code)
+      range_keys = [
+        WebAccessor::Sbi::ChartRange::ONE_YEAR,
+        WebAccessor::Sbi::ChartRange::TWO_MONTH,
+        WebAccessor::Sbi::ChartRange::FIVE_YEAR,
+        WebAccessor::Sbi::ChartRange::TEN_YEAR
+      ]
+      get_concated_price_chart_image_path(stock_code, range_keys, "/var/opt/stock_container/chart_images/stocks")
+    end
+
+    def get_concated_price_chart_image_path(stock_code, range_keys, image_dir)
       image_path = nil
       access do |accessor|
         visit(stock_price_page_url_of(stock_code))
-        image_path = get_concated_price_chart_image_path_in_iframe("//*[@id='main']/div[6]/iframe", range_keys, "stock_#{stock_code}")
+        image_path = get_concated_price_chart_image_path_in_iframe(
+          "//*[@id='main']/div[6]/iframe",
+          range_keys,
+          "stock_#{stock_code}",
+          image_dir
+        )
       end
       image_path
     end

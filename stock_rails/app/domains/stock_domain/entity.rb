@@ -1,5 +1,6 @@
 module StockDomain
   class Entity
+
     class << self
       def save_stock_informations(ignore_existing_stock_code: true)
         stock_values = ::WebAccessor::Sbi::StockInfo.new.get_stocks
@@ -30,20 +31,30 @@ module StockDomain
         end
       end
 
-      def get_favorite_stock_prices(user_id)
+      def get_favorite_stock_prices(user_id, need_chart: false)
         user_name, read_password = sbi_credential_from(user_id)
         return if user_name.nil? || read_password.nil?
-        ::WebAccessor::Sbi::StockPrice
+        stock_prices = ::WebAccessor::Sbi::StockPrice
           .new(need_credential: true, user_name: user_name, password: read_password)
           .get_portfolio_stock_prices
+        return stock_prices unless need_chart
+        stock_prices.map do |stock_price|
+          stock_price.chart_path = ::WebAccessor::Sbi::StockPrice.new.get_price_chart_image_path_of(stock_price.code)
+          stock_price
+        end
       end
 
-      def get_bought_stock_prices(user_id)
+      def get_bought_stock_prices(user_id, need_chart: false)
         user_name, read_password = sbi_credential_from(user_id)
         return if user_name.nil? || read_password.nil?
-        ::WebAccessor::Sbi::StockPrice
+        stock_prices = ::WebAccessor::Sbi::StockPrice
           .new(need_credential: true, user_name: user_name, password: read_password)
           .get_bought_stock_prices
+        return stock_prices unless need_chart
+        stock_prices.map do |stock_price|
+          stock_price.chart_path = ::WebAccessor::Sbi::StockPrice.new.get_price_chart_image_path_of(stock_price.code)
+          stock_price
+        end
       end
 
       # private
