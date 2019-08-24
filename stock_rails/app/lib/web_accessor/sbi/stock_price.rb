@@ -18,7 +18,7 @@ module WebAccessor::Sbi
       access do |accessor|
         visit("https://site2.sbisec.co.jp/ETGate/?_ControlID=WPLETpfR001Control&_PageID=DefaultPID&_DataStoreID=DSWPLETpfR001Control&_ActionID=DefaultAID&getFlg=on")
         portfolio_rows = accessor.find_elements(:xpath, "/html/body/div[3]/div/table/tbody/tr/td/table[4]/tbody/tr[2]/td/table/tbody/tr")
-        return if portfolio_rows.size <= 1 # ヘッダをのぞいて1つ以上行がない場合処理終了
+        return [] if portfolio_rows.size <= 1 # ヘッダをのぞいて1つ以上行がない場合処理終了
 
         result_stock_prices = portfolio_rows[1..-1].map do |portfolio_row|
           stock_price = StockPriceValue.new
@@ -59,7 +59,7 @@ module WebAccessor::Sbi
         # 100	       672	    674.9	   +290
         # 8002 丸紅...
         bought_rows = accessor.find_elements(:xpath, "//form[@name='FORM']/table[2]/tbody/tr[1]/td[2]/table[5]/tbody/tr/td[3]/table[4]/tbody/tr")
-        return if bought_rows.size <= 2
+        return [] if bought_rows.size <= 2
         result_stock_prices = bought_rows[2..-1].in_groups_of(2).map do |name_row, price_row|
           stock_price = StockPriceValue.new
           stock_price.code = get_content(target_element: name_row, selector: "./td[1]") do |content|

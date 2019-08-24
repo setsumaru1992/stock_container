@@ -28,17 +28,10 @@ class BotController < ApplicationController
       status: "success"
     }
     bought_stock_prices = ::StockDomain::Entity.get_bought_stock_prices(user_id_from(bot_params[:api_key]))
-    render json: response and return if bought_stock_prices.empty?
+    return render json: response if bought_stock_prices.empty?
 
     bought_stock_values = bought_stock_prices.map do |stock_price_value|
-      code = stock_price_value.code
-      # ActiveRecordの直呼びはCQRSの観点から許容
-      value = StockSlackValue.new
-      value.stock_price_value = stock_price_value
-      value.stock = ::Stock.find_by(code: code)
-      value.stock_condition = value.stock.stock_conditions.first
-      value.stock_financial_condition = value.stock.stock_financial_conditions.first
-      value
+      ::StockSlacker.build_stock_slack_value(stock_price_value)
     end
     StockSlacker.new.notice_bought_stocks(bought_stock_values)
     render json: response
@@ -50,8 +43,16 @@ class BotController < ApplicationController
     }
     bought_stock_prices = ::StockDomain::Entity.get_bought_stock_prices(user_id_from(bot_params[:api_key]))
     favorite_stock_prices = ::StockDomain::Entity.get_favorite_stock_prices(user_id_from(bot_params[:api_key]))
-    render json: response and return if bought_stock_prices.nil? && favorite_stock_prices.empty?
-    StockSlacker.new.notice_bought_and_favorite_stocks_with_chart(bought_stocks: bought_stock_prices, favorite_stocks: favorite_stock_prices)
+
+    return render json: response if bought_stock_prices.empty? && favorite_stock_prices.empty?
+
+    bought_stock_values = bought_stock_prices.map do |stock_price_value|
+      ::StockSlacker.build_stock_slack_value(stock_price_value)
+    end
+    favorite_stock_values = favorite_stock_prices.map do |stock_price_value|
+      ::StockSlacker.build_stock_slack_value(stock_price_value)
+    end
+    StockSlacker.new.notice_bought_and_favorite_stocks_with_chart(favorite_stock_values, bought_stock_values)
     render json: response
   end
 
