@@ -139,6 +139,6 @@ https://moyamoya.space/dailyutil/stockInfo/access2sbi_chart?stock_code=#{stock_v
 
   def parse_image_path_to_image_url(image_path, request_url)
     path = image_path.gsub("/var/opt/stock_container/", "")
-    "#{request_url}/#{path}"
+    "#{request_url}/stockapp/#{path}"
   end
 end
