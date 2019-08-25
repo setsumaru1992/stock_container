@@ -14,6 +14,8 @@
 <% if @stocks.empty? %>
   検索条件に合致するものが見つかりませんでした。
 <% else %>
+  <%= @stocks.size %>件ヒット
+  <div style="overflow: scroll; height: 1000px; width: 100%">
   <table class="table table-striped">
     <thead>
       <tr>
@@ -24,6 +26,10 @@
         <th>特色</th>
         <th>上場年<br><%= link_to "昇順", view_stock_search_path(order: "listed_year1") %>&nbsp;/&nbsp;<%= link_to "降順", view_stock_search_path(order: "listed_year2") %></th>
         <th>日経225入り</th>
+        <th>売上高(百万)<br><%= link_to "昇順", view_stock_search_path(order: "net_sales_profit_rate1") %>&nbsp;/&nbsp;<%= link_to "降順", view_stock_search_path(order: "net_sales_profit_rate2") %></th>
+        <th>営業利益(百万)<br><%= link_to "昇順", view_stock_search_path(order: "operating_income_profit_rate1") %>&nbsp;/&nbsp;<%= link_to "降順", view_stock_search_path(order: "operating_income_profit_rate2") %></th>
+        <th>経常利益(百万)<br><%= link_to "昇順", view_stock_search_path(order: "ordinary_income_profit_rate1") %>&nbsp;/&nbsp;<%= link_to "降順", view_stock_search_path(order: "ordinary_income_profit_rate2") %></th>
+        <th>純利益(百万)<br><%= link_to "昇順", view_stock_search_path(order: "net_income_profit_rate1") %>&nbsp;/&nbsp;<%= link_to "降順", view_stock_search_path(order: "net_income_profit_rate2") %></th>
       </tr>
     </thead>
     <tbody>
@@ -49,8 +55,29 @@
           </td>
           <td><%= stock["listed_year"] %></td>
           <td><%= stock["is_nikkei_average_group"] %></td>
+          <td>
+            <% if stock["latest_net_sales"].present? && stock["ref_net_sales"].present? && stock["net_sales_profit_rate"].present? %>
+              <%= @latest_first_year %>年<br><%= stock["latest_net_sales"] %><br><%= @latest_first_year - 1 %>年<br><%= stock["ref_net_sales"] %><br><%= stock["net_sales_profit_rate"].round(2) %>%
+            <% end %>
+          </td>
+          <td>
+            <% if stock["latest_operating_income"].present? && stock["ref_operating_income"].present? && stock["operating_income_profit_rate"].present? %>
+              <%= @latest_first_year %>年<br><%= stock["latest_operating_income"] %><br><%= @latest_first_year - 1 %>年<br><%= stock["ref_operating_income"] %><br><%= stock["operating_income_profit_rate"].round(2) %>%
+            <% end %>
+          </td>
+          <td>
+            <% if stock["latest_ordinary_income"].present? && stock["ref_ordinary_income"].present? && stock["ordinary_income_profit_rate"].present? %>
+              <%= @latest_first_year %>年<br><%= stock["latest_ordinary_income"] %><br><%= @latest_first_year - 1 %>年<br><%= stock["ref_ordinary_income"] %><br><%= stock["ordinary_income_profit_rate"].round(2) %>%
+            <% end %>
+          </td>
+          <td>
+            <% if stock["latest_net_income"].present? && stock["ref_net_income"].present? && stock["net_income_profit_rate"].present? %>
+              <%= @latest_first_year %>年<br><%= stock["latest_net_income"] %><br><%= @latest_first_year - 1 %>年<br><%= stock["ref_net_income"] %><br><%= stock["net_income_profit_rate"].round(2) %>%
+            <% end %>
+          </td>
         </tr>
       <% end %>
     </tbody>
   </table>
+  </div>
 <% end %>

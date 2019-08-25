@@ -2,7 +2,7 @@ Rails.application.routes.draw do
   namespace :view do
     get 'stock_category/list'
   end
-  root to: "debug#debug"
+  root to: "view/stock#search"
   devise_for :users, :controllers => {
     :registrations => 'users/registrations',
     :sessions => 'users/sessions'
