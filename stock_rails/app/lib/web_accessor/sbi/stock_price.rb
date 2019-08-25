@@ -105,10 +105,12 @@ module WebAccessor::Sbi
                 content.match(/(\d+)/)[1].to_i
               end
               stock.price = get_content(target_element: stock_row, selector: "./td[2]/div/p") do |content|
-                content.gsub(",", "").to_i
+                price = content.gsub(",", "")
+                next if price.to_i.to_s == price
+                price.to_i
               end
               stock
-            end
+            end.compact
           end.flatten
         end.flatten
       end
