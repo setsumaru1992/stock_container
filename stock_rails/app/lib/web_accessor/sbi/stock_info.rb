@@ -94,7 +94,7 @@ module WebAccessor::Sbi
         performance_rows = accessor.find_elements(:xpath, "//*[@id='main']/div[8]/table[2]/tbody/tr[1]/td[1]/table/tbody/tr")
         result_value.stock_performance_values = performance_rows.map do |performance_row|
           performance_title = get_content(target_element: performance_row, selector: "./td[1]")
-          next unless ["連", "◎"].select {|performance_record_prefix| performance_title.include?(performance_record_prefix)}.present?
+          next unless ["連", "◎", "単"].select {|performance_record_prefix| performance_title.include?(performance_record_prefix)}.present?
           next if ["予"].select {|performance_not_record_suffix| performance_title.include?(performance_not_record_suffix)}.present?
           performance_value = StockPerformanceValue.new
 
@@ -124,8 +124,8 @@ module WebAccessor::Sbi
         result_value.buy_unit = get_content(selector: "#{first_financial_table_selector}/tr[2]") do |content| # (例)売買単位100株
           content.match(/売買単位(\d+)株/)[1].to_i
         end
-        result_value.market_capitalization = get_content(selector: "#{first_financial_table_selector}/tr[3]") do |content| # (例)時価総額	67,834億円[225]
-          content.gsub(",", "").match(/(\d+)億/)[1].to_i.tap{|oku_number| oku_2_million(oku_number)}
+        result_value.market_capitalization = get_content(selector: "#{first_financial_table_selector}/tr[3]") do |content| # (例)時価総額	67,834億円[225] 別バージョン：34.1億円
+          content.gsub(",", "").match(/(\d+)\.*\d*億/)[1].to_i.tap{|oku_number| oku_2_million(oku_number)}
         end
         result_value.is_nikkei_average_group = get_content(selector: "#{first_financial_table_selector}/tr[3]") do |content| # (例)時価総額	67,834億円[225]
           content.match(/\[225\]/).present?

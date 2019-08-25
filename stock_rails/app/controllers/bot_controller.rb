@@ -16,6 +16,16 @@ class BotController < ApplicationController
     }
   end
 
+  def regist_or_update_stock
+    code = bot_params[:code].try(&:to_i)
+    raise "Please send stock code." if code.nil?
+
+    ::StockDomain::Entity.new(code).save_stock_information
+    render json: {
+      status: "success"
+    }
+  end
+
   def regist_stock_prices
     ::StockDomain::Entity.save_stock_prices
     render json: {
@@ -33,6 +43,7 @@ class BotController < ApplicationController
     bought_stock_values = bought_stock_prices.map do |stock_price_value|
       ::StockSlacker.build_stock_slack_value(stock_price_value)
     end
+    # TODO slackのWebhookURLをDBから取得する
     StockSlacker.new.notice_bought_stocks(bought_stock_values)
     render json: response
   end
@@ -64,7 +75,7 @@ class BotController < ApplicationController
   end
 
   def bot_params
-    params.permit(:api_key)
+    params.permit(:api_key, :code)
   end
 
   def rescue_error(e)

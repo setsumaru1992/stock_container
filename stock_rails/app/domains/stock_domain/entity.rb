@@ -11,6 +11,7 @@ module StockDomain
           begin
             entity.save_stock_information
           rescue => e
+            Rails.logger.error(e)
             Rails.logger.warn("証券番号#{code}の株情報の取得に失敗しました。")
           end
         end
@@ -26,6 +27,7 @@ module StockDomain
           begin
             entity.save_stock_price(price: stock_price.price, day: day)
           rescue => e
+            Rails.logger.error(e)
             Rails.logger.warn("証券番号#{stock_price.code}の株価の取得に失敗しました。")
           end
         end

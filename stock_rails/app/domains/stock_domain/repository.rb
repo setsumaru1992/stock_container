@@ -68,7 +68,7 @@ module StockDomain::Repository
     def build_stock_financial_condition_model(code, return_existing: false)
       stock_financial_condition_record = ::Stock.find_by(code: code).stock_financial_conditions
       existing = stock_financial_condition_record.first
-      return existing if return_existing
+      return existing if return_existing && existing.present?
       if existing.present?
         nil
       else
@@ -79,9 +79,10 @@ module StockDomain::Repository
     def build_stock_performance_model(code, year, month, return_existing: false)
       stock_performance_record = ::Stock.find_by(code: code).stock_performances
       conditions = {year: year, month: month}
+      existing = stock_performance_record.find_by(conditions)
 
-      return stock_performance_record.find_or_create_by(conditions) if return_existing
-      if stock_performance_record.exists?(conditions)
+      return existing if return_existing && existing.present?
+      if existing.present?
         nil
       else
         stock_performance_record.create

@@ -5,7 +5,7 @@
     <thead>
       <tr>
         <th>銘柄</th>
-        <th>時価総額</th>
+        <th>時価総額(億)</th>
         <th>株価</th>
         <th>業種</th>
         <th>特色</th>
@@ -22,7 +22,12 @@
             </a>
           <td><%= stock["market_capitalization"] %></td>
           <td><%= stock["code"] %></td>
-          <td><%= stock["category"] %></td>
+          <td>
+            <%= stock["category"] %>
+            <% if stock["category_rank"] %>
+            (<%= stock["category_rank"] %>位)
+            <% end %>
+          </td>
           <td>
             <details>
               <summary><%= stock["feature"].slice(0..7) %></summary>
