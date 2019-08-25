@@ -52,7 +52,7 @@ class BotController < ApplicationController
     favorite_stock_values = favorite_stock_prices.map do |stock_price_value|
       ::StockSlacker.build_stock_slack_value(stock_price_value)
     end
-    StockSlacker.new.notice_bought_and_favorite_stocks_with_chart(favorite_stock_values, bought_stock_values, request.base_url)
+    StockSlacker.new.notice_bought_and_favorite_stocks_with_chart(favorite_stock_values, bought_stock_values)
     render json: response
   end
 

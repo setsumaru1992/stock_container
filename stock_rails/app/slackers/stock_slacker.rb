@@ -27,11 +27,11 @@ class StockSlacker < ApplicationSlacker
     end
   end
 
-  def notice_bought_and_favorite_stocks_with_chart(favorite_stock_values, bought_stock_values, request_url)
+  def notice_bought_and_favorite_stocks_with_chart(favorite_stock_values, bought_stock_values)
     notice("---- 保有株 ----")
     bought_stock_values.each do |value|
       begin
-        notice_with_image(bought_stock_message(value), parse_image_path_to_image_url(value.stock_price_value.chart_path, request_url))
+        notice_with_image(bought_stock_message(value), parse_image_path_to_image_url(value.stock_price_value.chart_path))
       rescue => e
         ErrorSlacker.new.notice_error(e)
         notice("エラー発生")
@@ -44,7 +44,7 @@ class StockSlacker < ApplicationSlacker
       .sort_by {|favorite_stock_value| favorite_stock_value.stock_price_value.price}.reverse
       .each do |value|
       begin
-        notice_with_image(favorite_stock_message(value), parse_image_path_to_image_url(value.stock_price_value.chart_path, request_url))
+        notice_with_image(favorite_stock_message(value), parse_image_path_to_image_url(value.stock_price_value.chart_path))
       rescue => e
         ErrorSlacker.new.notice_error(e)
         notice("エラー発生")
@@ -137,8 +137,8 @@ https://moyamoya.space/dailyutil/stockInfo/access2sbi_chart?stock_code=#{stock_v
     "決算：#{settlement_month}月(#{settlement_months.join(", ")}月)\n"
   end
 
-  def parse_image_path_to_image_url(image_path, request_url)
+  def parse_image_path_to_image_url(image_path)
     path = image_path.gsub("/var/opt/stock_container/", "")
-    "#{request_url}/stockapp/#{path}"
+    "https://kibotsu.com/stockapp/#{path}"
   end
 end
