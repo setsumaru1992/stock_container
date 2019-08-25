@@ -15,6 +15,8 @@ kill_process () {
 
 RAILS_ROOT="${CONTAINER_ROOT}/stock_rails"
 cd "${RAILS_ROOT}"
-bundle install
 kill_process ${STOCK_PORT}
+
+bundle install
+rails assets:precompile
 rails server -p ${STOCK_PORT} &

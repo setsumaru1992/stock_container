@@ -1,3 +1,16 @@
+<details>
+  <summary>検索条件はこちら</summary>
+  <form acrion="./" method="get">
+    並び順<input type="text" name="order" value="<%= @order %>"><br>
+    <label><input type="checkbox" name="only_nikkei225" value="on" <% if @only_nikkei225 == "on" %>checked<% end %>>日経225のみ</label><br>
+    「(カラム名) + (ソートタイプ)」を入力。ソートタイプは1:昇順,2: 降順。「,」区切りで複数入力可能(デフォルト:code1)<br>
+    <button type="submit">検索</button><br>
+  </form>
+  パラメータ例
+  <%= @parameter_example %>
+  <%= @only_nikkei225 %>
+</details>
+
 <% if @stocks.empty? %>
   検索条件に合致するものが見つかりませんでした。
 <% else %>
