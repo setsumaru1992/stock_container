@@ -1,5 +1,8 @@
 Rails.application.routes.draw do
-  root to: "bot/debug#debug"
+  namespace :view do
+    get 'stock_category/list'
+  end
+  root to: "bot#debug"
   devise_for :users, :controllers => {
     :registrations => 'users/registrations',
     :sessions => 'users/sessions'
@@ -11,5 +14,9 @@ Rails.application.routes.draw do
     get    "regist_stock_prices"
     get    "notice_bought_stock_prices"
     get    "notice_bought_and_favorite_stocks_with_chart"
+  end
+
+  namespace :view do
+    get    "stock/search"
   end
 end

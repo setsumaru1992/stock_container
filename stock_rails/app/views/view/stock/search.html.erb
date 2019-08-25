@@ -1,0 +1,38 @@
+<% if @stocks.empty? %>
+  検索条件に合致するものが見つかりませんでした。
+<% else %>
+  <table class="table table-striped">
+    <thead>
+      <tr>
+        <th>銘柄</th>
+        <th>時価総額</th>
+        <th>株価</th>
+        <th>業種</th>
+        <th>特色</th>
+        <th>上場年</th>
+        <th>日経225入り</th>
+      </tr>
+    </thead>
+    <tbody>
+      <% @stocks.each do |stock| %>
+        <tr>
+          <td><%= %><%= stock["code"] %>&nbsp;
+            <a href="https://moyamoya.space/dailyutil/stockInfo/access2sbi_chart?stock_code=<%= stock["code"] %>" target="blank">
+             <%= stock["name"] %></td>
+            </a>
+          <td><%= stock["market_capitalization"] %></td>
+          <td><%= stock["code"] %></td>
+          <td><%= stock["category"] %></td>
+          <td>
+            <details>
+              <summary><%= stock["feature"].slice(0..7) %></summary>
+              <%= stock["feature"] %>
+            </details>
+          </td>
+          <td><%= stock["listed_year"] %></td>
+          <td><%= stock["is_nikkei_average_group"] %></td>
+        </tr>
+      <% end %>
+    </tbody>
+  </table>
+<% end %>
