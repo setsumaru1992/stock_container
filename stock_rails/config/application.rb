@@ -33,5 +33,10 @@ module StockRails
     end
 
     config.action_mailer.default_url_options = { host: 'localhost', port: 18090 }
+
+    config.log_formatter = proc do |severity, datetime, progname, msg|
+      "[#{severity}]#{datetime}: #{progname} : #{msg}\n"
+    end
+    config.logger = Logger.new("/var/log/app/stock_container/stock_rails/#{Rails.env}.log", "daily")
   end
 end
