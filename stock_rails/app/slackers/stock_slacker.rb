@@ -91,7 +91,7 @@ https://moyamoya.space/dailyutil/stockInfo/access2sbi_chart?stock_code=#{stock_v
 
   def profit(before, after)
     return NO_VALUE unless before.is_a?(Numeric) && after.is_a?(Numeric)
-    ((after - before).fdiv(before) * 100).round(1)
+    after - before
   end
 
   def profit_rate(before, after)
