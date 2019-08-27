@@ -15,10 +15,11 @@
   検索条件に合致するものが見つかりませんでした。
 <% else %>
   <%= @stocks.size %>件ヒット
-  <div style="overflow: scroll; height: 1000px; width: 100%">
+  <div style="overflow: scroll; height: 80vh; width: 100%; font-size: 8px;">
   <table class="table table-striped">
     <thead>
       <tr>
+        <th></th>
         <th>銘柄<br><%= link_to "昇順", view_stock_search_path(order: "code1") %>&nbsp;/&nbsp;<%= link_to "降順", view_stock_search_path(order: "code2") %></th>
         <th>時価総額(億)<br><%= link_to "昇順", view_stock_search_path(order: "market_capitalization1") %>&nbsp;/&nbsp;<%= link_to "降順", view_stock_search_path(order: "market_capitalization2") %></th>
         <th>株価(<%=@current_price_day %>)<br><%= link_to "昇順", view_stock_search_path(order: "price1") %>&nbsp;/&nbsp;<%= link_to "降順", view_stock_search_path(order: "price2") %></th>
@@ -33,8 +34,9 @@
       </tr>
     </thead>
     <tbody>
-      <% @stocks.each do |stock| %>
+      <% @stocks.each.with_index(1) do |stock, idx| %>
         <tr>
+          <td><%= idx %></td>
           <td><%= %><%= stock["code"] %>&nbsp;
             <a href="https://moyamoya.space/dailyutil/stockInfo/access2sbi_chart?stock_code=<%= stock["code"] %>" target="blank">
              <%= stock["name"] %></td>
@@ -53,7 +55,7 @@
               <%= stock["feature"] %>
             </details>
           </td>
-          <td><%= stock["listed_year"] %></td>
+          <td><%= stock["listed_year"] %>.<%= stock["listed_month"] %></td>
           <td><%= stock["is_nikkei_average_group"] %></td>
           <td>
             <% if stock["latest_net_sales"].present? && stock["ref_net_sales"].present? && stock["net_sales_profit_rate"].present? %>

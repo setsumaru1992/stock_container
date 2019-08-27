@@ -1,5 +1,4 @@
 Rails.application.routes.draw do
-
   scope :stockapp do
     namespace :view do
       get 'stock_category/list'

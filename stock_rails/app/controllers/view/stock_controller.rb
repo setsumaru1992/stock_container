@@ -17,8 +17,8 @@ class View::StockController < ApplicationController
       desc: "category ASC, category_rank DESC"
     },
     listed_year: {
-      asc: "listed_year ASC",
-      desc: "listed_year DESC"
+      asc: "listed_year ASC, listed_month ASC",
+      desc: "listed_year DESC, listed_month DESC"
     },
     net_sales_profit_rate: {
       asc: "net_sales_profit_rate ASC",
@@ -66,6 +66,7 @@ class View::StockController < ApplicationController
                 , stocks.name
                 , stocks.category
                 , stocks.listed_year
+                , stocks.listed_month
                 , stock_conditions.feature
                 , stock_conditions.category_rank
                 , stock_financial_conditions.market_capitalization
