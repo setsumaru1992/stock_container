@@ -13,6 +13,10 @@ class View::StockController < ApplicationController
       desc: "price DESC"
     },
     category: {
+      asc: "category ASC",
+      desc: "category DESC"
+    },
+    category_rank: {
       asc: "category ASC, category_rank ASC",
       desc: "category ASC, category_rank DESC"
     },

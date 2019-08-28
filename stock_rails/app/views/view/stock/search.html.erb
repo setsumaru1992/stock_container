@@ -20,17 +20,18 @@
     <thead>
       <tr>
         <th></th>
-        <th>銘柄<br><%= link_to "昇順", view_stock_search_path(order: "code1") %>&nbsp;/&nbsp;<%= link_to "降順", view_stock_search_path(order: "code2") %></th>
-        <th>時価総額(億)<br><%= link_to "昇順", view_stock_search_path(order: "market_capitalization1") %>&nbsp;/&nbsp;<%= link_to "降順", view_stock_search_path(order: "market_capitalization2") %></th>
-        <th>株価(<%=@current_price_day %>)<br><%= link_to "昇順", view_stock_search_path(order: "price1") %>&nbsp;/&nbsp;<%= link_to "降順", view_stock_search_path(order: "price2") %></th>
-        <th>業種<br><%= link_to "昇順", view_stock_search_path(order: "category1") %>&nbsp;/&nbsp;<%= link_to "降順", view_stock_search_path(order: "category2") %></th>
+        <th>銘柄<br><%= link_to "降順", view_stock_search_path(order: "code2") %>&nbsp;/&nbsp;<%= link_to "昇順", view_stock_search_path(order: "code1") %></th>
+        <th>時価総額(百万)<br><%= link_to "降順", view_stock_search_path(order: "market_capitalization2") %>&nbsp;/&nbsp;<%= link_to "昇順", view_stock_search_path(order: "market_capitalization1") %></th>
+        <th>株価(<%=@current_price_day %>)<br><%= link_to "降順", view_stock_search_path(order: "price2") %>&nbsp;/&nbsp;<%= link_to "昇順", view_stock_search_path(order: "price1") %></th>
+        <th>業種<br><%= link_to "降順", view_stock_search_path(order: "category2") %>&nbsp;/&nbsp;<%= link_to "昇順", view_stock_search_path(order: "category1") %></th>
+        <th>業種ランク<br><%= link_to "降順", view_stock_search_path(order: "category_rank2") %>&nbsp;/&nbsp;<%= link_to "昇順", view_stock_search_path(order: "category_rank1") %></th>
         <th>特色</th>
-        <th>上場年<br><%= link_to "昇順", view_stock_search_path(order: "listed_year1") %>&nbsp;/&nbsp;<%= link_to "降順", view_stock_search_path(order: "listed_year2") %></th>
+        <th>上場年<br><%= link_to "降順", view_stock_search_path(order: "listed_year2") %>&nbsp;/&nbsp;<%= link_to "昇順", view_stock_search_path(order: "listed_year1") %></th>
         <th>日経225入り</th>
-        <th>売上高(百万)<br><%= link_to "昇順", view_stock_search_path(order: "net_sales_profit_rate1") %>&nbsp;/&nbsp;<%= link_to "降順", view_stock_search_path(order: "net_sales_profit_rate2") %></th>
-        <th>営業利益(百万)<br><%= link_to "昇順", view_stock_search_path(order: "operating_income_profit_rate1") %>&nbsp;/&nbsp;<%= link_to "降順", view_stock_search_path(order: "operating_income_profit_rate2") %></th>
-        <th>経常利益(百万)<br><%= link_to "昇順", view_stock_search_path(order: "ordinary_income_profit_rate1") %>&nbsp;/&nbsp;<%= link_to "降順", view_stock_search_path(order: "ordinary_income_profit_rate2") %></th>
-        <th>純利益(百万)<br><%= link_to "昇順", view_stock_search_path(order: "net_income_profit_rate1") %>&nbsp;/&nbsp;<%= link_to "降順", view_stock_search_path(order: "net_income_profit_rate2") %></th>
+        <th>売上高(百万)<br><%= link_to "降順", view_stock_search_path(order: "net_sales_profit_rate2") %>&nbsp;/&nbsp;<%= link_to "昇順", view_stock_search_path(order: "net_sales_profit_rate1") %></th>
+        <th>営業利益(百万)<br><%= link_to "降順", view_stock_search_path(order: "operating_income_profit_rate2") %>&nbsp;/&nbsp;<%= link_to "昇順", view_stock_search_path(order: "operating_income_profit_rate1") %></th>
+        <th>経常利益(百万)<br><%= link_to "降順", view_stock_search_path(order: "ordinary_income_profit_rate2") %>&nbsp;/&nbsp;<%= link_to "昇順", view_stock_search_path(order: "ordinary_income_profit_rate1") %></th>
+        <th>純利益(百万)<br><%= link_to "降順", view_stock_search_path(order: "net_income_profit_rate2") %>&nbsp;/&nbsp;<%= link_to "昇順", view_stock_search_path(order: "net_income_profit_rate1") %></th>
       </tr>
     </thead>
     <tbody>
@@ -41,12 +42,18 @@
             <a href="https://moyamoya.space/dailyutil/stockInfo/access2sbi_chart?stock_code=<%= stock["code"] %>" target="blank">
              <%= stock["name"] %></td>
             </a>
-          <td><%= stock["market_capitalization"] %></td>
-          <td><%= stock["price"] %></td>
+          <td>
+            <% if stock["market_capitalization"].present? %>
+            <%= (stock["market_capitalization"]*100)&.to_s(:delimited) %>
+            <% end %>
+          </td>
+          <td><%= stock["price"]&.to_s(:delimited) %></td>
           <td>
             <%= stock["category"] %>
+          </td>
+          <td>
             <% if stock["category_rank"] %>
-            (<%= stock["category_rank"] %>位)
+              <%= stock["category_rank"] %>位
             <% end %>
           </td>
           <td>
@@ -59,22 +66,22 @@
           <td><%= stock["is_nikkei_average_group"] %></td>
           <td>
             <% if stock["latest_net_sales"].present? && stock["ref_net_sales"].present? && stock["net_sales_profit_rate"].present? %>
-              <%= @latest_first_year %>年<br><%= stock["latest_net_sales"] %><br><%= @latest_first_year - 1 %>年<br><%= stock["ref_net_sales"] %><br><%= stock["net_sales_profit_rate"].round(2) %>%
+              <%= @latest_first_year %>年<br><%= stock["latest_net_sales"]&.to_s(:delimited) %><br><%= @latest_first_year - 1 %>年<br><%= stock["ref_net_sales"]&.to_s(:delimited) %><br><%= stock["net_sales_profit_rate"] > 0 ? "△" : "▼" %><%= stock["net_sales_profit_rate"].round(2).abs&.to_s(:delimited) %>%
             <% end %>
           </td>
           <td>
             <% if stock["latest_operating_income"].present? && stock["ref_operating_income"].present? && stock["operating_income_profit_rate"].present? %>
-              <%= @latest_first_year %>年<br><%= stock["latest_operating_income"] %><br><%= @latest_first_year - 1 %>年<br><%= stock["ref_operating_income"] %><br><%= stock["operating_income_profit_rate"].round(2) %>%
+              <%= @latest_first_year %>年<br><%= stock["latest_operating_income"]&.to_s(:delimited) %><br><%= @latest_first_year - 1 %>年<br><%= stock["ref_operating_income"]&.to_s(:delimited) %><br><%= stock["net_sales_profit_rate"] > 0 ? "△" : "▼" %><%= stock["operating_income_profit_rate"].round(2).abs&.to_s(:delimited) %>%
             <% end %>
           </td>
           <td>
             <% if stock["latest_ordinary_income"].present? && stock["ref_ordinary_income"].present? && stock["ordinary_income_profit_rate"].present? %>
-              <%= @latest_first_year %>年<br><%= stock["latest_ordinary_income"] %><br><%= @latest_first_year - 1 %>年<br><%= stock["ref_ordinary_income"] %><br><%= stock["ordinary_income_profit_rate"].round(2) %>%
+              <%= @latest_first_year %>年<br><%= stock["latest_ordinary_income"]&.to_s(:delimited) %><br><%= @latest_first_year - 1 %>年<br><%= stock["ref_ordinary_income"]&.to_s(:delimited) %><br><%= stock["net_sales_profit_rate"] > 0 ? "△" : "▼" %><%= stock["ordinary_income_profit_rate"].round(2).abs&.to_s(:delimited) %>%
             <% end %>
           </td>
           <td>
             <% if stock["latest_net_income"].present? && stock["ref_net_income"].present? && stock["net_income_profit_rate"].present? %>
-              <%= @latest_first_year %>年<br><%= stock["latest_net_income"] %><br><%= @latest_first_year - 1 %>年<br><%= stock["ref_net_income"] %><br><%= stock["net_income_profit_rate"].round(2) %>%
+              <%= @latest_first_year %>年<br><%= stock["latest_net_income"]&.to_s(:delimited) %><br><%= @latest_first_year - 1 %>年<br><%= stock["ref_net_income"]&.to_s(:delimited) %><br><%= stock["net_sales_profit_rate"] > 0 ? "△" : "▼" %><%= stock["net_income_profit_rate"].round(2).abs&.to_s(:delimited) %>%
             <% end %>
           </td>
         </tr>
