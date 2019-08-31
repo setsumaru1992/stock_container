@@ -117,6 +117,7 @@ https://moyamoya.space/dailyutil/stockInfo/access2sbi_chart?stock_code=#{stock_v
   def stock_is_nikkei_average_group(stock_value)
     is_nikkei_average_group = stock_value.try(:stock_financial_condition).try(:is_nikkei_average_group)
     return "" if is_nikkei_average_group.nil?
+    return "" unless is_nikkei_average_group
     "日経225銘柄"
   end
 
