@@ -48,6 +48,19 @@ module StockDomain::Repository
       stock_price.save!
     end
 
+    def create_stock_prices(attributes_list)
+      code_id_hash = Stock.all.reduce({}){|hash, stock| hash[stock.code] = stock.id; hash}
+      stock_prices = attributes_list.map do |attributes|
+        StockPrice.new(
+          stock_id: code_id_hash[attributes[:code]],
+          price: attributes[:price],
+          day: attributes[:day]
+        )
+      end
+
+      StockPrice.import(stock_prices)
+    end
+
     private
 
     def build_stock_model(code)
