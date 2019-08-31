@@ -91,7 +91,9 @@ module StockDomain
     def save_stock_information
       web_accessor = ::WebAccessor::Sbi::StockInfo.new
       web_value = ::WebAccessor::Sbi::StockInfoValue.new
-      web_value.merge!(web_accessor.get_company_base_info_of(@code))
+      base_company_info = web_accessor.get_company_base_info_of(@code)
+      return if base_company_info.nil?
+      web_value.merge!(base_company_info)
       Repository.create_or_update_stock(web_value.to_h)
       Repository.create_or_update_stock_condition(web_value.to_h)
 

@@ -46,6 +46,7 @@ module WebAccessor::Sbi
         base_selector = "//*[@id='main']/div[8]"
         company_info_selector = "#{base_selector}/table[1]/tbody"
 
+        return if accessor.find_element(:xpath, "#{company_info_selector}/tr[2]").nil?
         name_and_kana = get_content(selector: "#{company_info_selector}/tr[2]") do |content| # (例)7974   任天堂    にんてんどう   ［ その他製品 ］
           content.match(/\d+\s+(\S+)\s+(\S+)\s+\S.*/)
         end
@@ -127,9 +128,9 @@ module WebAccessor::Sbi
         result_value.market_capitalization = get_content(selector: "#{first_financial_table_selector}/tr[3]") do |content| # (例)時価総額	67,834億円[225] 別バージョン：34.1億円
           market_capitalization = content.gsub(",", "")
           if market_capitalization.include?("億")
-            market_capitalization.match(/(\d+)\.*\d*億/)[1].to_i.tap{|oku_number| oku_2_million(oku_number)}
+            market_capitalization.match(/(\d+)\.*\d*億/)[1].to_i.tap{|oku_number| break oku_2_million(oku_number)}
           elsif market_capitalization.include?("兆")
-            market_capitalization.match(/(\d+)\.*\d*兆/)[1].to_i.tap{|oku_number| cho_2_million(oku_number)}
+            market_capitalization.match(/(\d+)\.*\d*兆/)[1].to_i.tap{|oku_number| break cho_2_million(oku_number)}
           else
             nil
           end
