@@ -125,7 +125,14 @@ module WebAccessor::Sbi
           content.match(/売買単位(\d+)株/)[1].to_i
         end
         result_value.market_capitalization = get_content(selector: "#{first_financial_table_selector}/tr[3]") do |content| # (例)時価総額	67,834億円[225] 別バージョン：34.1億円
-          content.gsub(",", "").match(/(\d+)\.*\d*億/)[1].to_i.tap{|oku_number| oku_2_million(oku_number)}
+          market_capitalization = content.gsub(",", "")
+          if market_capitalization.include?("億")
+            market_capitalization.match(/(\d+)\.*\d*億/)[1].to_i.tap{|oku_number| oku_2_million(oku_number)}
+          elsif market_capitalization.include?("兆")
+            market_capitalization.match(/(\d+)\.*\d*兆/)[1].to_i.tap{|oku_number| cho_2_million(oku_number)}
+          else
+            nil
+          end
         end
         result_value.is_nikkei_average_group = get_content(selector: "#{first_financial_table_selector}/tr[3]") do |content| # (例)時価総額	67,834億円[225]
           content.match(/\[225\]/).present?
@@ -161,6 +168,11 @@ module WebAccessor::Sbi
 
     def oku_2_million(oku_number)
       raw_number = oku_number * 10_000 ** 2
+      raw_number / 1_000_000
+    end
+
+    def cho_2_million(oku_number)
+      raw_number = oku_number * 10_000 ** 3
       raw_number / 1_000_000
     end
   end
