@@ -1,23 +1,40 @@
 <script>
-  function clickSearch(e, order) {
+  function change_order(e, order) {
     e.preventDefault()
     document.getElementById("order").value = order
     document.getElementById("search").click()
   }
+  function change_category(e, category){
+    e.preventDefault()
+    document.getElementById("category").value = category
+    document.getElementById("search").click()
+  }
 </script>
 
-<details>
-  <summary>検索条件はこちら</summary>
-  <%= form_tag(form_url, method: "get") do %>
-    並び順<input type="text" name="order" id="order" value="<%= order %>"><br>
-    <label><input type="checkbox" name="only_nikkei225" value="on"
-                  <% if only_nikkei225 == "on" %>checked
-                  <% end %>>日経225のみ</label><br>
-    「(カラム名) + (ソートタイプ)」を入力。ソートタイプは1:▲,2: ▼。「,」区切りで複数入力可能(デフォルト:code1)<br>
-    <button type="submit" id="search">検索</button>
+<%= form_for(form_url, method: "get") do |f| %>
+  並び順<input type="text" name="order" id="order" value="<%= order %>"><br>
+  カテゴリー<select name="category" id="category">
+  <option value="">--</option>
+  <% categories.each do |category| %>
+    <option
+      value="<%= category %>"
+      <% if category == selected_category %>
+      selected
+      <% end %>
+      >
+      <%= category %>
+    </option>
   <% end %>
-  <br><br>
+</select>
+  <label><input type="checkbox" name="only_nikkei225" value="on"
+                <% if only_nikkei225 == "on" %>checked
+                <% end %>>日経225のみ</label><br>
+  <button type="submit" id="search">検索</button>
+<% end %><br>
+<details>
+  <summary>詳細はこちら</summary>
+  並び順には「(カラム名) + (ソートタイプ)」を入力。ソートタイプは1:▲,2: ▼。「,」区切りで複数入力可能(デフォルト:code1)<br><br>
   パラメータ例
   <%= parameter_example %>
   <br><br>
-</details>
+</details><br>

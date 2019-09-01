@@ -1,23 +1,32 @@
 class View::StockController < ApplicationController
   def base
     @order = params[:order] || ""
+    @category = params[:category] || ""
     @only_nikkei225 = params[:only_nikkei225] || "off"
 
     conditions = {}
     if @only_nikkei225 == "on"
       conditions[:stock_financial_conditions] ||= {}
       conditions[:stock_financial_conditions][:is_nikkei_average_group] = true
+    end
+
+    if @category.present?
+      conditions[:stocks] ||= {}
+      conditions[:stocks][:category] = @category
     end
 
     order = parse_order_param(params[:order], order_hash[:code][:asc])
     @latest_first_year = StockPerformance.order("year DESC").first.year
     @current_price_day = StockPrice.last.day
     @stock_paginator, @stocks = StockDomain::Query.base_stock_info(conditions, order, @current_price_day, @latest_first_year, params[:page])
+
     @parameter_example = @stocks.first
+    @categories = Stock.select("DISTINCT category").map(&:category)
   end
 
   def chart
     @order = params[:order] || ""
+    @category = params[:category] || ""
     @only_nikkei225 = params[:only_nikkei225] || "off"
 
     conditions = {}
@@ -26,9 +35,16 @@ class View::StockController < ApplicationController
       conditions[:stock_financial_conditions][:is_nikkei_average_group] = true
     end
 
+    if @category.present?
+      conditions[:stocks] ||= {}
+      conditions[:stocks][:category] = @category
+    end
+
     order = parse_order_param(params[:order], order_hash[:day_of_week_golden_cross][:desc])
     @stock_paginator, @stocks = StockDomain::Query.chart(conditions, order, params[:page])
+
     @parameter_example = @stocks.first
+    @categories = Stock.select("DISTINCT category").map(&:category)
   end
 
   private

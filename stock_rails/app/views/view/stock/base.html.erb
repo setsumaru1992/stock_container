@@ -1,10 +1,12 @@
 <%= render partial: "search_box",
-          locals: {order: @order,
-          only_nikkei225: @only_nikkei225,
-          parameter_example: @parameter_example,
-          form_url: view_stock_base_path}
+           locals: {order: @order,
+                    only_nikkei225: @only_nikkei225,
+                    parameter_example: @parameter_example,
+                    categories: @categories,
+                    selected_category: @category,
+                    form_url: view_stock_base_path}
 %>
-<%= link_to "チャートページへ",  view_stock_chart_path %>
+<%= link_to "チャートページへ", view_stock_chart_path %>
 <br>
 
 <% if @stocks.empty? %>
@@ -18,50 +20,50 @@
       <tr>
         <th></th>
         <th>
-          銘柄<br><%= link_to "▼", "#", onclick: "clickSearch(event, 'code2')" %>&nbsp;/&nbsp;
-          <%= link_to "▲", "#", onclick: "clickSearch(event, 'code1')" %>
+          銘柄<br><%= link_to "▼", "#", onclick: "change_order(event, 'code2')" %>&nbsp;/&nbsp;
+          <%= link_to "▲", "#", onclick: "change_order(event, 'code1')" %>
         </th>
         <th>
-          時価総額(百万)<br><%= link_to "▼", "#", onclick: "clickSearch(event, 'market_capitalization2')" %>&nbsp;/&nbsp;
-          <%= link_to "▲", "#", onclick: "clickSearch(event, 'market_capitalization1')" %>
+          時価総額(百万)<br><%= link_to "▼", "#", onclick: "change_order(event, 'market_capitalization2')" %>&nbsp;/&nbsp;
+          <%= link_to "▲", "#", onclick: "change_order(event, 'market_capitalization1')" %>
         </th>
         <th>
-          株価(<%= @current_price_day %>)<br><%= link_to "▼", "#", onclick: "clickSearch(event, 'price2')" %>&nbsp;/&nbsp;
-          <%= link_to "▲", "#", onclick: "clickSearch(event, 'price1')" %>
+          株価(<%= @current_price_day %>)<br><%= link_to "▼", "#", onclick: "change_order(event, 'price2')" %>&nbsp;/&nbsp;
+          <%= link_to "▲", "#", onclick: "change_order(event, 'price1')" %>
         </th>
         <th>
-          業種<br><%= link_to "▼", "#", onclick: "clickSearch(event, 'category2')" %>&nbsp;/&nbsp;
-          <%= link_to "▲", "#", onclick: "clickSearch(event, 'category1')" %>
+          業種<br><%= link_to "▼", "#", onclick: "change_order(event, 'category2')" %>&nbsp;/&nbsp;
+          <%= link_to "▲", "#", onclick: "change_order(event, 'category1')" %>
         </th>
         <th>
-          業種ランク<br><%= link_to "▼", "#", onclick: "clickSearch(event, 'category_rank2')" %>&nbsp;/&nbsp;
-          <%= link_to "▲", "#", onclick: "clickSearch(event, 'category_rank1')" %>
+          業種ランク<br><%= link_to "▼", "#", onclick: "change_order(event, 'category_rank2')" %>&nbsp;/&nbsp;
+          <%= link_to "▲", "#", onclick: "change_order(event, 'category_rank1')" %>
         </th>
         <th>
           特色
         </th>
         <th>
-          上場年<br><%= link_to "▼", "#", onclick: "clickSearch(event, 'listed_year2')" %>&nbsp;/&nbsp;
-          <%= link_to "▲", "#", onclick: "clickSearch(event, 'listed_year1')" %>
+          上場年<br><%= link_to "▼", "#", onclick: "change_order(event, 'listed_year2')" %>&nbsp;/&nbsp;
+          <%= link_to "▲", "#", onclick: "change_order(event, 'listed_year1')" %>
         </th>
         <th>
           日経225入り
         </th>
         <th>
-          売上高(百万)<br><%= link_to "▼", "#", onclick: "clickSearch(event, 'net_sales_profit_rate2')" %>&nbsp;/&nbsp;
-          <%= link_to "▲", "#", onclick: "clickSearch(event, 'net_sales_profit_rate1')" %>
+          売上高(百万)<br><%= link_to "▼", "#", onclick: "change_order(event, 'net_sales_profit_rate2')" %>&nbsp;/&nbsp;
+          <%= link_to "▲", "#", onclick: "change_order(event, 'net_sales_profit_rate1')" %>
         </th>
         <th>
-          営業利益(百万)<br><%= link_to "▼", "#", onclick: "clickSearch(event, 'operating_income_profit_rate2')" %>&nbsp;/&nbsp;
-          <%= link_to "▲", "#", onclick: "clickSearch(event, 'operating_income_profit_rate1')" %>
+          営業利益(百万)<br><%= link_to "▼", "#", onclick: "change_order(event, 'operating_income_profit_rate2')" %>&nbsp;/&nbsp;
+          <%= link_to "▲", "#", onclick: "change_order(event, 'operating_income_profit_rate1')" %>
         </th>
         <th>
-          経常利益(百万)<br><%= link_to "▼", "#", onclick: "clickSearch(event, 'ordinary_income_profit_rate2')" %>&nbsp;/&nbsp;
-          <%= link_to "▲", "#", onclick: "clickSearch(event, 'ordinary_income_profit_rate1')" %>
+          経常利益(百万)<br><%= link_to "▼", "#", onclick: "change_order(event, 'ordinary_income_profit_rate2')" %>&nbsp;/&nbsp;
+          <%= link_to "▲", "#", onclick: "change_order(event, 'ordinary_income_profit_rate1')" %>
         </th>
         <th>
-          純利益(百万)<br><%= link_to "▼", "#", onclick: "clickSearch(event, 'net_income_profit_rate2')" %>&nbsp;/&nbsp;
-          <%= link_to "▲", "#", onclick: "clickSearch(event, 'net_income_profit_rate1')" %>
+          純利益(百万)<br><%= link_to "▼", "#", onclick: "change_order(event, 'net_income_profit_rate2')" %>&nbsp;/&nbsp;
+          <%= link_to "▲", "#", onclick: "change_order(event, 'net_income_profit_rate1')" %>
         </th>
       </tr>
       </thead>
@@ -80,7 +82,7 @@
           </td>
           <td><%= stock["price"]&.to_s(:delimited) %></td>
           <td>
-            <%= stock["category"] %>
+            <%= link_to stock["category"], "#", onclick: "change_category(event, '#{stock["category"]}')" %>
           </td>
           <td>
             <% if stock["category_rank"] %>
