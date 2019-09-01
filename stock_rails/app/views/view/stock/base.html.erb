@@ -10,7 +10,8 @@
 <% if @stocks.empty? %>
   検索条件に合致するものが見つかりませんでした。
 <% else %>
-  <%= @stocks.size %>件ヒット
+  <%= @stock_paginator.total_count %>件ヒット
+  <%= paginate @stock_paginator -%>
   <div style="overflow: scroll; height: 100vh; width: 100%; font-size: 8px;">
     <table class="table table-striped">
       <thead>
@@ -65,7 +66,7 @@
       </tr>
       </thead>
       <tbody>
-      <% @stocks.each.with_index(1) do |stock, idx| %>
+      <% @stocks.each.with_index((@stock_paginator.current_page - 1) * @stock_paginator.limit_value + 1) do |stock, idx| %>
         <tr>
           <td><%= idx %></td>
           <td><%= %><%= stock["code"] %>&nbsp;

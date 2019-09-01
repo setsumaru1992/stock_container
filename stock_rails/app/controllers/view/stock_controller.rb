@@ -12,7 +12,7 @@ class View::StockController < ApplicationController
     order = parse_order_param(params[:order], order_hash[:code][:asc])
     @latest_first_year = StockPerformance.order("year DESC").first.year
     @current_price_day = StockPrice.last.day
-    @stocks = StockDomain::Query.base_stock_info(conditions, order, @current_price_day, @latest_first_year)
+    @stock_paginator, @stocks = StockDomain::Query.base_stock_info(conditions, order, @current_price_day, @latest_first_year, params[:page])
     @parameter_example = @stocks.first
   end
 
@@ -27,7 +27,7 @@ class View::StockController < ApplicationController
     end
 
     order = parse_order_param(params[:order], order_hash[:day_of_week_golden_cross][:desc])
-    @stocks = StockDomain::Query.chart(conditions, order)
+    @stock_paginator, @stocks = StockDomain::Query.chart(conditions, order, params[:page])
     @parameter_example = @stocks.first
   end
 

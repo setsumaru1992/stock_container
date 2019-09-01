@@ -1,7 +1,7 @@
 module StockDomain::Query
   class << self
-    def base_stock_info(conditions, order, current_price_day, latest_first_year)
-      Stock
+    def base_stock_info(conditions, order, current_price_day, latest_first_year, page)
+      stock_paginator = Stock
         .joins("LEFT OUTER JOIN stock_conditions ON stocks.id = stock_conditions.stock_id")
         .joins("LEFT OUTER JOIN stock_financial_conditions ON stocks.id = stock_financial_conditions.stock_id")
         .joins("LEFT OUTER JOIN stock_performances ON stocks.id = stock_performances.stock_id AND stock_performances.year = #{Date.today.year}")
@@ -10,6 +10,7 @@ module StockDomain::Query
         .joins("LEFT OUTER JOIN stock_performances AS ref_performances ON stocks.id = ref_performances.stock_id AND ref_performances.year = '#{latest_first_year - 1}'")
         .where(conditions)
         .order(order)
+        .page(page)
         .select("
                 stocks.id
                 , stocks.code
@@ -54,13 +55,16 @@ module StockDomain::Query
                       THEN ((latest_performances.net_income - ref_performances.net_income) / ABS(ref_performances.net_income)) * 100
                     ELSE NULL
                   END) AS net_income_profit_rate
-                ").map { |stock| stock.attributes}
+                ")
+      stocks =  stock_paginator.map { |stock| stock.attributes}
+      [stock_paginator, stocks]
     end
 
-    def chart(conditions, order)
-      Stock
+    def chart(conditions, order, page)
+      stock_paginator = Stock
         .where(conditions)
         .order(order)
+        .page(page)
         .select("
                 stocks.id
                 , stocks.code
@@ -105,7 +109,9 @@ module StockDomain::Query
                   ORDER BY day DESC
                   LIMIT 1
                 ) AS day_of_week_dead_cross
-                ").map { |stock| stock.attributes}
+                ")
+      stocks =  stock_paginator.map { |stock| stock.attributes}
+      [stock_paginator, stocks]
     end
   end
 end
