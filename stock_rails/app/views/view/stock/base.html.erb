@@ -1,0 +1,134 @@
+<%= render partial: "search_box",
+          locals: {order: @order,
+          only_nikkei225: @only_nikkei225,
+          parameter_example: @parameter_example,
+          form_url: view_stock_base_path}
+%>
+<%= link_to "チャートページへ",  view_stock_chart_path %>
+<br>
+
+<% if @stocks.empty? %>
+  検索条件に合致するものが見つかりませんでした。
+<% else %>
+  <%= @stocks.size %>件ヒット
+  <div style="overflow: scroll; height: 100vh; width: 100%; font-size: 8px;">
+    <table class="table table-striped">
+      <thead>
+      <tr>
+        <th></th>
+        <th>
+          銘柄<br><%= link_to "▼", "#", onclick: "clickSearch(event, 'code2')" %>&nbsp;/&nbsp;
+          <%= link_to "▲", "#", onclick: "clickSearch(event, 'code1')" %>
+        </th>
+        <th>
+          時価総額(百万)<br><%= link_to "▼", "#", onclick: "clickSearch(event, 'market_capitalization2')" %>&nbsp;/&nbsp;
+          <%= link_to "▲", "#", onclick: "clickSearch(event, 'market_capitalization1')" %>
+        </th>
+        <th>
+          株価(<%= @current_price_day %>)<br><%= link_to "▼", "#", onclick: "clickSearch(event, 'price2')" %>&nbsp;/&nbsp;
+          <%= link_to "▲", "#", onclick: "clickSearch(event, 'price1')" %>
+        </th>
+        <th>
+          業種<br><%= link_to "▼", "#", onclick: "clickSearch(event, 'category2')" %>&nbsp;/&nbsp;
+          <%= link_to "▲", "#", onclick: "clickSearch(event, 'category1')" %>
+        </th>
+        <th>
+          業種ランク<br><%= link_to "▼", "#", onclick: "clickSearch(event, 'category_rank2')" %>&nbsp;/&nbsp;
+          <%= link_to "▲", "#", onclick: "clickSearch(event, 'category_rank1')" %>
+        </th>
+        <th>
+          特色
+        </th>
+        <th>
+          上場年<br><%= link_to "▼", "#", onclick: "clickSearch(event, 'listed_year2')" %>&nbsp;/&nbsp;
+          <%= link_to "▲", "#", onclick: "clickSearch(event, 'listed_year1')" %>
+        </th>
+        <th>
+          日経225入り
+        </th>
+        <th>
+          売上高(百万)<br><%= link_to "▼", "#", onclick: "clickSearch(event, 'net_sales_profit_rate2')" %>&nbsp;/&nbsp;
+          <%= link_to "▲", "#", onclick: "clickSearch(event, 'net_sales_profit_rate1')" %>
+        </th>
+        <th>
+          営業利益(百万)<br><%= link_to "▼", "#", onclick: "clickSearch(event, 'operating_income_profit_rate2')" %>&nbsp;/&nbsp;
+          <%= link_to "▲", "#", onclick: "clickSearch(event, 'operating_income_profit_rate1')" %>
+        </th>
+        <th>
+          経常利益(百万)<br><%= link_to "▼", "#", onclick: "clickSearch(event, 'ordinary_income_profit_rate2')" %>&nbsp;/&nbsp;
+          <%= link_to "▲", "#", onclick: "clickSearch(event, 'ordinary_income_profit_rate1')" %>
+        </th>
+        <th>
+          純利益(百万)<br><%= link_to "▼", "#", onclick: "clickSearch(event, 'net_income_profit_rate2')" %>&nbsp;/&nbsp;
+          <%= link_to "▲", "#", onclick: "clickSearch(event, 'net_income_profit_rate1')" %>
+        </th>
+      </tr>
+      </thead>
+      <tbody>
+      <% @stocks.each.with_index(1) do |stock, idx| %>
+        <tr>
+          <td><%= idx %></td>
+          <td><%= %><%= stock["code"] %>&nbsp;
+            <a href="https://moyamoya.space/dailyutil/stockInfo/access2sbi_chart?stock_code=<%= stock["code"] %>" target="blank">
+            <%= stock["name"] %></td>
+          </a>
+          <td>
+            <% if stock["market_capitalization"].present? %>
+              <%= (stock["market_capitalization"] * 100)&.to_s(:delimited) %>
+            <% end %>
+          </td>
+          <td><%= stock["price"]&.to_s(:delimited) %></td>
+          <td>
+            <%= stock["category"] %>
+          </td>
+          <td>
+            <% if stock["category_rank"] %>
+              <%= stock["category_rank"] %>位
+            <% end %>
+          </td>
+          <td>
+            <details>
+              <summary><%= stock["feature"].slice(0..7) %></summary>
+              <%= stock["feature"] %>
+            </details>
+          </td>
+          <td><%= stock["listed_year"] %>.<%= stock["listed_month"] %></td>
+          <td><%= stock["is_nikkei_average_group"] %></td>
+          <td>
+            <% if stock["latest_net_sales"].present? && stock["ref_net_sales"].present? && stock["net_sales_profit_rate"].present? %>
+              <%= @latest_first_year %>年<br><%= stock["latest_net_sales"]&.to_s(:delimited) %>
+              <br><%= @latest_first_year - 1 %>年<br><%= stock["ref_net_sales"]&.to_s(:delimited) %>
+              <br><%= stock["net_sales_profit_rate"] > 0 ? "△" : "▼" %><%= stock["net_sales_profit_rate"].round(2).abs&.to_s(:delimited) %>
+              %
+            <% end %>
+          </td>
+          <td>
+            <% if stock["latest_operating_income"].present? && stock["ref_operating_income"].present? && stock["operating_income_profit_rate"].present? %>
+              <%= @latest_first_year %>年<br><%= stock["latest_operating_income"]&.to_s(:delimited) %>
+              <br><%= @latest_first_year - 1 %>年<br><%= stock["ref_operating_income"]&.to_s(:delimited) %>
+              <br><%= stock["net_sales_profit_rate"] > 0 ? "△" : "▼" %><%= stock["operating_income_profit_rate"].round(2).abs&.to_s(:delimited) %>
+              %
+            <% end %>
+          </td>
+          <td>
+            <% if stock["latest_ordinary_income"].present? && stock["ref_ordinary_income"].present? && stock["ordinary_income_profit_rate"].present? %>
+              <%= @latest_first_year %>年<br><%= stock["latest_ordinary_income"]&.to_s(:delimited) %>
+              <br><%= @latest_first_year - 1 %>年<br><%= stock["ref_ordinary_income"]&.to_s(:delimited) %>
+              <br><%= stock["net_sales_profit_rate"] > 0 ? "△" : "▼" %><%= stock["ordinary_income_profit_rate"].round(2).abs&.to_s(:delimited) %>
+              %
+            <% end %>
+          </td>
+          <td>
+            <% if stock["latest_net_income"].present? && stock["ref_net_income"].present? && stock["net_income_profit_rate"].present? %>
+              <%= @latest_first_year %>年<br><%= stock["latest_net_income"]&.to_s(:delimited) %>
+              <br><%= @latest_first_year - 1 %>年<br><%= stock["ref_net_income"]&.to_s(:delimited) %>
+              <br><%= stock["net_sales_profit_rate"] > 0 ? "△" : "▼" %><%= stock["net_income_profit_rate"].round(2).abs&.to_s(:delimited) %>
+              %
+            <% end %>
+          </td>
+        </tr>
+      <% end %>
+      </tbody>
+    </table>
+  </div>
+<% end %>

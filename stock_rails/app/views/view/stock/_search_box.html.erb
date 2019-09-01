@@ -1,0 +1,23 @@
+<script>
+  function clickSearch(e, order) {
+    e.preventDefault()
+    document.getElementById("order").value = order
+    document.getElementById("search").click()
+  }
+</script>
+
+<details>
+  <summary>検索条件はこちら</summary>
+  <%= form_tag(form_url, method: "get") do %>
+    並び順<input type="text" name="order" id="order" value="<%= order %>"><br>
+    <label><input type="checkbox" name="only_nikkei225" value="on"
+                  <% if only_nikkei225 == "on" %>checked
+                  <% end %>>日経225のみ</label><br>
+    「(カラム名) + (ソートタイプ)」を入力。ソートタイプは1:▲,2: ▼。「,」区切りで複数入力可能(デフォルト:code1)<br>
+    <button type="submit" id="search">検索</button>
+  <% end %>
+  <br><br>
+  パラメータ例
+  <%= parameter_example %>
+  <br><br>
+</details>

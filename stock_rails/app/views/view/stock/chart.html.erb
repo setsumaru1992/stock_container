@@ -1,0 +1,68 @@
+<%= render partial: "search_box",
+           locals: {order: @order,
+                    only_nikkei225: @only_nikkei225,
+                    parameter_example: @parameter_example,
+                    form_url: view_stock_chart_path}
+%>
+<%= link_to "基本情報ページへ",  view_stock_chart_path %>
+<br>
+
+<% if @stocks.empty? %>
+  検索条件に合致するものが見つかりませんでした。
+<% else %>
+  <%= @stocks.size %>件ヒット
+  <div style="overflow: scroll; height: 100vh; width: 100%; font-size: 8px;">
+    <table class="table table-striped">
+      <thead>
+      <tr>
+        <th></th>
+        <th>
+          銘柄<br><%= link_to "▼", "#", onclick: "clickSearch(event, 'code2')" %>&nbsp;/&nbsp;
+          <%= link_to "▲", "#", onclick: "clickSearch(event, 'code1')" %>
+        </th>
+      <th>チャート画像</th>
+      <th>日足GoldenCross<br><%= link_to "▼", "#", onclick: "clickSearch(event, 'day_of_day_golden_cross2')" %>&nbsp;/&nbsp;
+        <%= link_to "▲", "#", onclick: "clickSearch(event, 'day_of_day_golden_cross1')" %></th>
+      <th>日足DeadCross<br><%= link_to "▼", "#", onclick: "clickSearch(event, 'day_of_day_dead_cross2')" %>&nbsp;/&nbsp;
+        <%= link_to "▲", "#", onclick: "clickSearch(event, 'day_of_day_dead_cross1')" %></th>
+      <th>週足GoldenCross<br><%= link_to "▼", "#", onclick: "clickSearch(event, 'day_of_week_golden_cross2')" %>&nbsp;/&nbsp;
+        <%= link_to "▲", "#", onclick: "clickSearch(event, 'day_of_week_golden_cross1')" %></th>
+      <th>週足DeadCross<br><%= link_to "▼", "#", onclick: "clickSearch(event, 'day_of_week_dead_cross2')" %>&nbsp;/&nbsp;
+        <%= link_to "▲", "#", onclick: "clickSearch(event, 'day_of_week_dead_cross1')" %></th>
+      </tr>
+      </thead>
+      <tbody>
+      <% @stocks.each.with_index(1) do |stock, idx| %>
+        <tr>
+          <td><%= idx %></td>
+          <td><%= %><%= stock["code"] %>&nbsp;
+            <a href="https://moyamoya.space/dailyutil/stockInfo/access2sbi_chart?stock_code=<%= stock["code"] %>" target="blank">
+            <%= stock["name"] %></td>
+          </a>
+          <td></td>
+          <td>
+            <% if stock["day_of_day_golden_cross"].present? %>
+              <%= stock["day_of_day_golden_cross"] %>
+            <% end %>
+          </td>
+          <td>
+            <% if stock["day_of_day_dead_cross"].present? %>
+              <%= stock["day_of_day_dead_cross"] %>
+            <% end %>
+          </td>
+          <td>
+            <% if stock["day_of_week_golden_cross"].present? %>
+              <%= stock["day_of_week_golden_cross"] %>
+            <% end %>
+          </td>
+          <td>
+            <% if stock["day_of_week_dead_cross"].present? %>
+              <%= stock["day_of_week_dead_cross"] %>
+            <% end %>
+          </td>
+        </tr>
+      <% end %>
+      </tbody>
+    </table>
+  </div>
+<% end %>

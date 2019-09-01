@@ -1,9 +1,17 @@
 Rails.application.routes.draw do
   scope :stockapp do
+    root to: "views/stock#base"
+
+    namespace :view do
+      get "stock", to: "stock#base"
+      get "stock/base", to: "stock#base"
+      get "stock/chart", to: "stock#chart"
+    end
+
     namespace :view do
       get 'stock_category/list'
     end
-    root to: "view/stock#search"
+
     get "debug/debug"
 
     devise_for :users, :controllers => {
@@ -19,9 +27,6 @@ Rails.application.routes.draw do
       get "regist_stock_mean_prices"
       get "notice_bought_stock_prices"
       get "notice_bought_and_favorite_stocks_with_chart"
-    end
-    namespace :view do
-      get "stock/search"
     end
   end
 end
