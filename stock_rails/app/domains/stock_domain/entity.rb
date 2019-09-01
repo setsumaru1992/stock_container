@@ -148,23 +148,26 @@ module StockDomain
     private
 
     def mean_values_of(day: Date.today)
-      return [nil, nil, nil, nil, nil] if Stock.find_by(code: @code).stock_prices.find_by(day: day).nil?
-      prices = Stock.find_by(code: @code).stock_prices.where("day <= ?", day).order("day DESC").limit(150).map(&:price)
+      return [nil, nil, nil, nil] if Stock.find_by(code: @code).stock_prices.find_by(day: day).nil?
+      price_models = Stock.find_by(code: @code).stock_prices.where("day <= ?", day).order("day DESC").limit(150)
 
-      return [nil, nil, nil, nil, nil] unless prices.size >= 5
-      mean_5week = nil
-      mean_3month = nil
-      mean_6month = nil
-
-      mean_1week = mean_of(prices, 5)
-      mean_5week = mean_of(prices, 25) if prices.size >= 25
-      mean_3month = mean_of(prices, 75) if prices.size >= 75
-      mean_6month = mean_of(prices, 150) if prices.size >= 150
+      return [nil, nil, nil, nil] unless price_models.size >= 5
+      mean_1week = means_between_day_and_previous_day(price_models, day, 5)
+      mean_5week = means_between_day_and_previous_day(price_models, day, 25)
+      mean_3month = means_between_day_and_previous_day(price_models, day, 75)
+      mean_6month = means_between_day_and_previous_day(price_models, day, 150)
       [mean_1week, mean_5week, mean_3month, mean_6month]
     end
 
-    def mean_of(arr, size)
-      arr.take(size).sum / size
+    # 例 25日平均なら25日は平日25日だから土日合わせた35日前に近い日付までの平均値段を算出する
+    def means_between_day_and_previous_day(price_models, day, go_back_weekdays)
+      target_day = day - (go_back_weekdays * (7.fdiv(5))).days
+      target_price_models = price_models.select {|price_model| price_model.day > target_day}
+      diff_days = (target_price_models.last.day - target_day).to_i
+      return unless diff_days < 7
+
+      prices = target_price_models.map(&:price)
+      prices.sum / prices.size
     end
 
     def previous_day_of(day)
@@ -175,9 +178,9 @@ module StockDomain
 
     def has_golden_or_dead_cross?(short_range_price, long_range_price, previous_short_range_price, previous_long_range_price)
       return [nil, nil] if [short_range_price, long_range_price, previous_short_range_price, previous_long_range_price].select {|value| value.nil?}.size > 0
-      has_short_range_golden_cross = short_range_price > long_range_price && previous_short_range_price <= previous_long_range_price
-      has_short_range_dead_cross = short_range_price < long_range_price && previous_short_range_price >= previous_long_range_price
-      [has_short_range_golden_cross, has_short_range_dead_cross]
+      has_golden_cross = short_range_price > long_range_price && previous_short_range_price <= previous_long_range_price
+      has_dead_cross = short_range_price < long_range_price && previous_short_range_price >= previous_long_range_price
+      [has_golden_cross, has_dead_cross]
     end
   end
 end
