@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2019_08_18_093330) do
+ActiveRecord::Schema.define(version: 2019_09_01_054926) do
 
   create_table "api_keys", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
     t.bigint "user_id"
@@ -61,6 +61,22 @@ ActiveRecord::Schema.define(version: 2019_08_18_093330) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["stock_id"], name: "index_stock_financial_conditions_on_stock_id"
+  end
+
+  create_table "stock_mean_prices", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
+    t.bigint "stock_id"
+    t.date "day"
+    t.integer "mean_1week"
+    t.integer "mean_5week"
+    t.integer "mean_3month"
+    t.integer "mean_6month"
+    t.boolean "has_day_golden_cross"
+    t.boolean "has_day_dead_cross"
+    t.boolean "has_week_golden_cross"
+    t.boolean "has_week_dead_cross"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["stock_id"], name: "index_stock_mean_prices_on_stock_id"
   end
 
   create_table "stock_performances", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
@@ -128,6 +144,7 @@ ActiveRecord::Schema.define(version: 2019_08_18_093330) do
   add_foreign_key "sbi_credentials", "users"
   add_foreign_key "stock_conditions", "stocks"
   add_foreign_key "stock_financial_conditions", "stocks"
+  add_foreign_key "stock_mean_prices", "stocks"
   add_foreign_key "stock_performances", "stocks"
   add_foreign_key "stock_prices", "stocks"
 end

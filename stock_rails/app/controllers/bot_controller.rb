@@ -33,6 +33,13 @@ class BotController < ApplicationController
     }
   end
 
+  def regist_stock_mean_prices
+    ::StockDomain::Entity.save_stock_mean_prices
+    render json: {
+      status: "success"
+    }
+  end
+
   def notice_bought_stock_prices
     response = {
       status: "success"

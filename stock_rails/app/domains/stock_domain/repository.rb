@@ -51,14 +51,34 @@ module StockDomain::Repository
     def create_stock_prices(attributes_list)
       code_id_hash = Stock.all.reduce({}){|hash, stock| hash[stock.code] = stock.id; hash}
       stock_prices = attributes_list.map do |attributes|
+        stock_id = code_id_hash[attributes[:code]]
+        next if stock_id.nil?
         StockPrice.new(
-          stock_id: code_id_hash[attributes[:code]],
+          stock_id: stock_id,
           price: attributes[:price],
           day: attributes[:day]
         )
-      end
+      end.compact
 
-      StockPrice.import(stock_prices)
+      stock_prices.each_slice(1000) do |batch_stock_prices|
+        StockPrice.import(batch_stock_prices)
+      end
+    end
+
+    def create_mean_price(attributes)
+      stock_mean_price = build_stock_mean_price_model(attributes[:code], attributes[:day])
+      return if stock_mean_price.nil?
+
+      keys = [:day, :mean_1week, :mean_5week, :mean_3month, :mean_6month]
+      stock_mean_price = update_model_fields_by_attribute(stock_mean_price, attributes, keys)
+      stock_mean_price.save!
+    end
+
+    def update_cross_value(attributes)
+    stock_mean_price = build_stock_mean_price_model(attributes[:code], attributes[:day], return_existing: true)
+    keys = [:has_day_golden_cross, :has_day_dead_cross, :has_week_golden_cross, :has_week_dead_cross]
+    stock_mean_price = update_model_fields_by_attribute(stock_mean_price, attributes, keys)
+    stock_mean_price.save!
     end
 
     private
@@ -111,6 +131,18 @@ module StockDomain::Repository
         nil
       else
         stock_price_record.create
+      end
+    end
+
+    def build_stock_mean_price_model(code, day, return_existing: false)
+      stock_mean_price_record = ::Stock.find_by(code: code).stock_mean_prices
+      conditions = {day: day}
+
+      return stock_mean_price_record.find_or_create_by(conditions) if return_existing
+      if stock_mean_price_record.exists?(conditions)
+        nil
+      else
+        stock_mean_price_record.create
       end
     end
 

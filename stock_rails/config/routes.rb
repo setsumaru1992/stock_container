@@ -16,6 +16,7 @@ Rails.application.routes.draw do
       get "regist_or_update_stocks"
       get "regist_or_update_stock"
       get "regist_stock_prices"
+      get "regist_stock_mean_prices"
       get "notice_bought_stock_prices"
       get "notice_bought_and_favorite_stocks_with_chart"
     end
