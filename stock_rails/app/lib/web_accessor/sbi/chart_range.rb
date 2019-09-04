@@ -2,6 +2,7 @@ module WebAccessor::Sbi::ChartRange
   ONE_DAY = :ONE_DAY
   TWO_DAY = :TWO_DAY
   FIVE_DAY = :FIVE_DAY
+  THREE_DAY = :THREE_DAY
   TEN_DAY = :TEN_DAY
   ONE_MONTH = :ONE_MONTH
   TWO_MONTH = :TWO_MONTH
@@ -19,15 +20,16 @@ module WebAccessor::Sbi::ChartRange
     TWO_DAY: 2,
     FIVE_DAY: 3,
     TEN_DAY: 4,
-    ONE_MONTH: 5,
-    TWO_MONTH: 6,
-    THREE_MONTH: 7,
-    SIX_MONTH: 8,
-    ONE_YEAR: 9,
-    TWO_YEAR: 10,
-    THREE_YEAR: 11,
-    FIVE_YEAR: 12,
-    TEN_YEAR: 13,
-    TWENTY_YEAR: 14
+    THREE_DAY: 5,
+    ONE_MONTH: 6,
+    TWO_MONTH: 7,
+    THREE_MONTH: 8,
+    SIX_MONTH: 9,
+    ONE_YEAR: 10,
+    TWO_YEAR: 11,
+    THREE_YEAR: 12,
+    FIVE_YEAR: 13,
+    TEN_YEAR: 14,
+    TWENTY_YEAR: 15
   }
 end
