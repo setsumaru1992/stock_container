@@ -9,11 +9,14 @@
     document.getElementById("category").value = category
     document.getElementById("search").click()
   }
+  function click_search(){
+    document.getElementById("search").click()
+  }
 </script>
 
 <%= form_for(form_url, method: "get") do |f| %>
   並び順<input type="text" name="order" id="order" value="<%= order %>"><br>
-  カテゴリー<select name="category" id="category">
+  カテゴリー<select name="category" id="category" onchange="click_search()">
   <option value="">--</option>
   <% categories.each do |category| %>
     <option

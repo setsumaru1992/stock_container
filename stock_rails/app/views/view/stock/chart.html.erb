@@ -23,16 +23,27 @@
           銘柄<br><%= link_to "▼", "#", onclick: "change_order(event, 'code2')" %>&nbsp;/&nbsp;
           <%= link_to "▲", "#", onclick: "change_order(event, 'code1')" %>
         </th>
-      <th>チャート画像</th>
-      <th>日足GoldenCross<br><%= link_to "▼", "#", onclick: "change_order(event, 'day_of_day_golden_cross2')" %>&nbsp;/&nbsp;
-        <%= link_to "▲", "#", onclick: "change_order(event, 'day_of_day_golden_cross1')" %></th>
-      <th>日足DeadCross<br><%= link_to "▼", "#", onclick: "change_order(event, 'day_of_day_dead_cross2')" %>&nbsp;/&nbsp;
-        <%= link_to "▲", "#", onclick: "change_order(event, 'day_of_day_dead_cross1')" %></th>
-      <th>週足GoldenCross<br><%= link_to "▼", "#", onclick: "change_order(event, 'day_of_week_golden_cross2')" %>&nbsp;/&nbsp;
-        <%= link_to "▲", "#", onclick: "change_order(event, 'day_of_week_golden_cross1')" %></th>
-      <th>週足DeadCross<br><%= link_to "▼", "#", onclick: "change_order(event, 'day_of_week_dead_cross2')" %>&nbsp;/&nbsp;
-        <%= link_to "▲", "#", onclick: "change_order(event, 'day_of_week_dead_cross1')" %></th>
-      </tr>
+        <th>
+          業種<br><%= link_to "▼", "#", onclick: "change_order(event, 'category2')" %>&nbsp;/&nbsp;
+          <%= link_to "▲", "#", onclick: "change_order(event, 'category1')" %>
+        </th>
+        <th>
+          業種ランク<br><%= link_to "▼", "#", onclick: "change_order(event, 'category_rank2')" %>&nbsp;/&nbsp;
+          <%= link_to "▲", "#", onclick: "change_order(event, 'category_rank1')" %>
+        </th>
+        <th>
+          特色
+        </th>
+        <th>チャート画像</th>
+        <th>日足GoldenCross<br><%= link_to "▼", "#", onclick: "change_order(event, 'day_of_day_golden_cross2')" %>&nbsp;/&nbsp;
+          <%= link_to "▲", "#", onclick: "change_order(event, 'day_of_day_golden_cross1')" %></th>
+        <th>日足DeadCross<br><%= link_to "▼", "#", onclick: "change_order(event, 'day_of_day_dead_cross2')" %>&nbsp;/&nbsp;
+          <%= link_to "▲", "#", onclick: "change_order(event, 'day_of_day_dead_cross1')" %></th>
+        <th>週足GoldenCross<br><%= link_to "▼", "#", onclick: "change_order(event, 'day_of_week_golden_cross2')" %>&nbsp;/&nbsp;
+          <%= link_to "▲", "#", onclick: "change_order(event, 'day_of_week_golden_cross1')" %></th>
+        <th>週足DeadCross<br><%= link_to "▼", "#", onclick: "change_order(event, 'day_of_week_dead_cross2')" %>&nbsp;/&nbsp;
+          <%= link_to "▲", "#", onclick: "change_order(event, 'day_of_week_dead_cross1')" %></th>
+        </tr>
       </thead>
       <tbody>
       <% @stocks.each.with_index((@stock_paginator.current_page - 1) * @stock_paginator.limit_value + 1) do |stock, idx| %>
@@ -40,8 +51,25 @@
           <td><%= idx %></td>
           <td><%= %><%= stock["code"] %>&nbsp;
             <a href="https://moyamoya.space/dailyutil/stockInfo/access2sbi_chart?stock_code=<%= stock["code"] %>" target="blank">
-            <%= stock["name"] %></td>
-          </a>
+              <%= stock["name"] %>
+            </a>
+            <% if stock["is_nikkei_average_group"].present? && stock["is_nikkei_average_group"] == 1 %><br>(日経225)<% end %>
+            <% if stock["listed_year"].present? && stock["listed_year"] <= 5 %><br>(新上場)<% end %>
+          </td>
+          <td>
+            <%= link_to stock["category"], "#", onclick: "change_category(event, '#{stock["category"]}')" %>
+          </td>
+          <td>
+            <% if stock["category_rank"] %>
+              <%= stock["category_rank"] %>位
+            <% end %>
+          </td>
+          <td>
+            <details>
+              <summary><%= stock["feature"].slice(0..7) %></summary>
+              <%= stock["feature"] %>
+            </details>
+          </td>
           <td></td>
           <td>
             <% if stock["day_of_day_golden_cross"].present? %>

@@ -5,5 +5,5 @@ class Stock < ApplicationRecord
   has_many :stock_prices
   has_many :stock_mean_prices
 
-  paginates_per 50
+  paginates_per 200
 end

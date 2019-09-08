@@ -65,6 +65,14 @@
           純利益(百万)<br><%= link_to "▼", "#", onclick: "change_order(event, 'net_income_profit_rate2')" %>&nbsp;/&nbsp;
           <%= link_to "▲", "#", onclick: "change_order(event, 'net_income_profit_rate1')" %>
         </th>
+        <th>
+          <details><summary>PER</summary>=<br>時価総額÷純利益<br>低いなら割安</details><%= link_to "▼", "#", onclick: "change_order(event, 'per2')" %>&nbsp;/&nbsp;
+          <%= link_to "▲", "#", onclick: "change_order(event, 'per1')" %>
+        </th>
+        <th>
+          <details><summary>PBR</summary>=<br>時価総額÷自己資本<br>低いなら割安</details><%= link_to "▼", "#", onclick: "change_order(event, 'pbr2')" %>&nbsp;/&nbsp;
+          <%= link_to "▲", "#", onclick: "change_order(event, 'pbr1')" %>
+        </th>
       </tr>
       </thead>
       <tbody>
@@ -73,11 +81,15 @@
           <td><%= idx %></td>
           <td><%= %><%= stock["code"] %>&nbsp;
             <a href="https://moyamoya.space/dailyutil/stockInfo/access2sbi_chart?stock_code=<%= stock["code"] %>" target="blank">
-            <%= stock["name"] %></td>
-          </a>
+              <%= stock["name"] %>
+            </a>
+            <% if stock["is_nikkei_average_group"].present? && stock["is_nikkei_average_group"] == 1 %><br>(日経225)<% end %>
+            <% if stock["listed_year"].present? && stock["listed_year"] <= 5 %><br>(新上場)<% end %>
+            <% if stock["net_sales_profit_rate"].present? && stock["net_sales_profit_rate"] >= 10 %><br>(営業利益↑↑)<% end %>
+          </td>
           <td>
             <% if stock["market_capitalization"].present? %>
-              <%= (stock["market_capitalization"] * 100)&.to_s(:delimited) %>
+              <%= stock["market_capitalization"].to_s(:delimited) %>
             <% end %>
           </td>
           <td><%= stock["price"]&.to_s(:delimited) %></td>
@@ -127,6 +139,16 @@
               <br><%= @latest_first_year - 1 %>年<br><%= stock["ref_net_income"]&.to_s(:delimited) %>
               <br><%= stock["net_sales_profit_rate"] > 0 ? "△" : "▼" %><%= stock["net_income_profit_rate"].round(2).abs&.to_s(:delimited) %>
               %
+            <% end %>
+          </td>
+          <td>
+            <% if stock["market_capitalization"].present? && stock["shareholder_equity"].present? && stock["per"].present? %>
+              <%= stock["per"].round.to_s(:delimited) %>
+            <% end %>
+          </td>
+          <td>
+            <% if stock["market_capitalization"].present? && stock["ref_net_income"].present? && stock["pbr"].present? %>
+              <%= stock["pbr"].round.to_s(:delimited) %>
             <% end %>
           </td>
         </tr>

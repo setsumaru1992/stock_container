@@ -115,6 +115,14 @@ class View::StockController < ApplicationController
       day_of_week_dead_cross: {
         asc: "day_of_week_dead_cross ASC, day_of_day_dead_cross ASC, day_of_day_golden_cross ASC, day_of_week_golden_cross ASC",
         desc: "day_of_week_dead_cross DESC, day_of_day_dead_cross DESC, day_of_day_golden_cross DESC, day_of_week_golden_cross DESC"
+      },
+      per: {
+        asc: "per ASC",
+        desc: "per DESC"
+      },
+      pbr: {
+        asc: "pbr ASC",
+        desc: "pbr DESC"
       }
     }
   end

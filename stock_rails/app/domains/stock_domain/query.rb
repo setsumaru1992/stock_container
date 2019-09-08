@@ -22,6 +22,7 @@ module StockDomain::Query
                 , stock_conditions.category_rank
                 , stock_financial_conditions.market_capitalization
                 , stock_financial_conditions.is_nikkei_average_group
+                , stock_financial_conditions.shareholder_equity
                 , stock_prices.price
 
                 , latest_performances.net_sales AS latest_net_sales
@@ -55,6 +56,8 @@ module StockDomain::Query
                       THEN ((latest_performances.net_income - ref_performances.net_income) / ABS(ref_performances.net_income)) * 100
                     ELSE NULL
                   END) AS net_income_profit_rate
+                , stock_financial_conditions.market_capitalization / latest_performances.net_income AS per
+                , stock_financial_conditions.market_capitalization / stock_financial_conditions.shareholder_equity AS pbr
                 ")
       stocks =  stock_paginator.map { |stock| stock.attributes}
       [stock_paginator, stocks]
@@ -65,10 +68,17 @@ module StockDomain::Query
         .where(conditions)
         .order(order)
         .page(page)
+        .joins("LEFT OUTER JOIN stock_conditions ON stocks.id = stock_conditions.stock_id")
+        .joins("LEFT OUTER JOIN stock_financial_conditions ON stocks.id = stock_financial_conditions.stock_id")
         .select("
                 stocks.id
                 , stocks.code
                 , stocks.name
+                , stocks.category
+                , stock_conditions.feature
+                , stock_conditions.category_rank
+                , stocks.listed_year
+                , stock_financial_conditions.is_nikkei_average_group
 
                 , (
                   SELECT smp.day
