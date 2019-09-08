@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2019_09_01_054926) do
+ActiveRecord::Schema.define(version: 2019_09_08_111611) do
 
   create_table "api_keys", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
     t.bigint "user_id"
@@ -35,6 +35,16 @@ ActiveRecord::Schema.define(version: 2019_09_01_054926) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["user_id"], name: "index_sbi_credentials_on_user_id"
+  end
+
+  create_table "stock_charts", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
+    t.bigint "stock_id"
+    t.date "day"
+    t.integer "range_type"
+    t.string "image"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["stock_id"], name: "index_stock_charts_on_stock_id"
   end
 
   create_table "stock_conditions", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
