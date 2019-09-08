@@ -63,13 +63,14 @@ module StockDomain::Query
       [stock_paginator, stocks]
     end
 
-    def chart(conditions, order, page)
+    def chart(conditions, order, day, range_type, page)
       stock_paginator = Stock
         .where(conditions)
         .order(order)
         .page(page)
         .joins("LEFT OUTER JOIN stock_conditions ON stocks.id = stock_conditions.stock_id")
         .joins("LEFT OUTER JOIN stock_financial_conditions ON stocks.id = stock_financial_conditions.stock_id")
+        .joins("LEFT OUTER JOIN stock_charts ON stocks.id = stock_charts.stock_id AND stock_charts.day = '#{day}' AND stock_charts.range_type = #{range_type}")
         .select("
                 stocks.id
                 , stocks.code
@@ -79,6 +80,8 @@ module StockDomain::Query
                 , stock_conditions.category_rank
                 , stocks.listed_year
                 , stock_financial_conditions.is_nikkei_average_group
+                , stock_charts.id as chart_id
+                , stock_charts.image
 
                 , (
                   SELECT smp.day

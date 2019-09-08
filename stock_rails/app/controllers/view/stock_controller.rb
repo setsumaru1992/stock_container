@@ -27,6 +27,7 @@ class View::StockController < ApplicationController
   def chart
     @order = params[:order] || ""
     @category = params[:category] || ""
+    @category = params[:category] || ""
     @only_nikkei225 = params[:only_nikkei225] || "off"
 
     conditions = {}
@@ -41,7 +42,9 @@ class View::StockController < ApplicationController
     end
 
     order = parse_order_param(params[:order], order_hash[:day_of_week_golden_cross][:desc])
-    @stock_paginator, @stocks = StockDomain::Query.chart(conditions, order, params[:page])
+    @latest_chart_day = StockChart.order("day DESC").first.day
+    range_type = params[:range_type] || StockChart::RANGE_TYPE_HASH[StockChart::FIVE_YEAR]
+    @stock_paginator, @stocks = StockDomain::Query.chart(conditions, order, @latest_chart_day, range_type, params[:page])
 
     @parameter_example = @stocks.first
     @categories = Stock.select("DISTINCT category").map(&:category)

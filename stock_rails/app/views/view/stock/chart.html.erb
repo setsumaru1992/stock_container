@@ -49,7 +49,7 @@
       <% @stocks.each.with_index((@stock_paginator.current_page - 1) * @stock_paginator.limit_value + 1) do |stock, idx| %>
         <tr>
           <td><%= idx %></td>
-          <td><%= %><%= stock["code"] %>&nbsp;
+          <td><%= stock["code"] %>&nbsp;
             <a href="https://moyamoya.space/dailyutil/stockInfo/access2sbi_chart?stock_code=<%= stock["code"] %>" target="blank">
               <%= stock["name"] %>
             </a>
@@ -70,7 +70,11 @@
               <%= stock["feature"] %>
             </details>
           </td>
-          <td></td>
+          <td>
+            <% if stock["image"] %>
+              <img src="/stockapp/chart_images/stock_chart/image/<%= stock["chart_id"] %>/<%= stock["image"] %>" />
+              <% end %>
+          </td>
           <td>
             <% if stock["day_of_day_golden_cross"].present? %>
               <%= stock["day_of_day_golden_cross"] %>
