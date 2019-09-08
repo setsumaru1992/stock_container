@@ -43,6 +43,15 @@ module WebAccessor::Sbi
       end
     end
 
+    def get_price_chart_image_paths_in_iframe(iframe_xpath, range_keys, image_name, image_dir, image_extension: "jpeg")
+      switch_to_iframe(iframe_xpath)
+      image_path_and_range_list = range_keys.map do |range_key|
+        image_path = get_price_chart_image_path_in_iframe(range_key, image_dir, image_name, image_extension)
+        [image_path, range_key]
+      end
+      image_path_and_range_list
+    end
+
     def get_concated_price_chart_image_path_in_iframe(iframe_xpath, range_keys, image_name, image_dir, image_extension: "jpeg")
       switch_to_iframe(iframe_xpath)
       image_paths = range_keys.map do |range_key|

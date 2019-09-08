@@ -81,6 +81,15 @@ module StockDomain::Repository
     stock_mean_price.save!
     end
 
+    def create_chart(attributes)
+      stock_chart = build_stock_chart_model(attributes[:code], attributes[:day], attributes[:range_type])
+      return if stock_chart.nil?
+
+      keys = [:day, :range_type, :image]
+      stock_chart = update_model_fields_by_attribute(stock_chart, attributes, keys)
+      stock_chart.save!
+    end
+
     private
 
     def build_stock_model(code)
@@ -152,6 +161,18 @@ module StockDomain::Repository
         model.send("#{key}=", attributes[key])
       end
       model
+    end
+
+    def build_stock_chart_model(code, day, range_type, return_existing: false)
+      stock_chart_record = ::Stock.find_by(code: code).stock_charts
+      conditions = {day: day, range_type: range_type}
+
+      return stock_chart_record.find_or_create_by(conditions) if return_existing
+      if stock_chart_record.exists?(conditions)
+        nil
+      else
+        stock_chart_record.create
+      end
     end
   end
 end

@@ -51,6 +51,21 @@ module StockDomain
         end
       end
 
+      def save_stock_charts(day: Date.today)
+        day = day_of_price(day: day) if day == Date.today
+        codes = ::StockDomain::Repository.stock_codes
+
+        codes.each do |code|
+          entity = self.new(code)
+          begin
+            entity.save_chart(day: day)
+          rescue => e
+            Rails.logger.error(e)
+            Rails.logger.warn("証券番号#{code}のチャート作成に失敗しました。")
+          end
+        end
+      end
+
       def get_favorite_stock_prices(user_id, need_chart: false)
         user_name, read_password = sbi_credential_from(user_id)
         return if user_name.nil? || read_password.nil?
@@ -59,7 +74,7 @@ module StockDomain
                          .get_portfolio_stock_prices
         return stock_prices unless need_chart
         stock_prices.map do |stock_price|
-          stock_price.chart_path = ::WebAccessor::Sbi::StockPrice.new.get_price_chart_image_path_of(stock_price.code)
+          stock_price.chart_path = ::WebAccessor::Sbi::StockPrice.new.get_concated_price_chart_image_path_of(stock_price.code)
           stock_price
         end
       end
@@ -72,7 +87,7 @@ module StockDomain
                          .get_bought_stock_prices
         return stock_prices unless need_chart
         stock_prices.map do |stock_price|
-          stock_price.chart_path = ::WebAccessor::Sbi::StockPrice.new.get_price_chart_image_path_of(stock_price.code)
+          stock_price.chart_path = ::WebAccessor::Sbi::StockPrice.new.get_concated_price_chart_image_path_of(stock_price.code)
           stock_price
         end
       end
@@ -143,6 +158,19 @@ module StockDomain
       # 週足ゴールデンクロス・デッドクロス。13週平均線（≒3ヶ月）が26週平均線（≒6ヶ月）を超えたかどうか
       has_week_golden_cross, has_week_dead_cross = has_golden_or_dead_cross?(mean_3month, mean_6month, previous_mean_3month, previous_mean_6month)
       Repository.update_cross_value(code: @code, day: day, has_day_golden_cross: has_day_golden_cross, has_day_dead_cross: has_day_dead_cross, has_week_golden_cross: has_week_golden_cross, has_week_dead_cross: has_week_dead_cross)
+    end
+
+    def save_chart(day: Date.today)
+      image_path_and_range_list = ::WebAccessor::Sbi::StockPrice.new.get_price_chart_image_paths(@code, range_keys: [
+        ::StockChart::ONE_YEAR,
+        ::StockChart::TWO_MONTH,
+        ::StockChart::FIVE_YEAR,
+        ::StockChart::TEN_YEAR
+      ])
+      image_path_and_range_list.each do |image_path, range_key|
+        Repository.create_chart(code: @code, day: day, image: File.open(image_path), range_type: ::StockChart::RANGE_TYPE_HASH[range_key])
+        FileUtils.rm(image_path)
+      end
     end
 
     private

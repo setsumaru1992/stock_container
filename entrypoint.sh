@@ -16,6 +16,8 @@ kill_process () {
 RAILS_ROOT="${CONTAINER_ROOT}/stock_rails"
 cd "${RAILS_ROOT}"
 kill_process ${STOCK_PORT}
+spring stop
+rm "tmp/pids/server.pid"
 
 bundle install
 rails assets:precompile
