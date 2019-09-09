@@ -62,6 +62,7 @@ module StockDomain
         rescue => e
           Rails.logger.info("#{path}はすでに削除済みです。")
         end
+
         codes.each do |code|
           entity = self.new(code)
           begin
