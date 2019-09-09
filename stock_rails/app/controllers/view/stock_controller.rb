@@ -18,7 +18,9 @@ class View::StockController < ApplicationController
     order = parse_order_param(params[:order], order_hash[:code][:asc])
     @latest_first_year = StockPerformance.order("year DESC").first.year
     @current_price_day = StockPrice.last.day
-    @stock_paginator, @stocks = StockDomain::Query.base_stock_info(conditions, order, @current_price_day, @latest_first_year, params[:page])
+    @latest_chart_day = StockChart.order("day DESC").first.day
+    range_type = params[:range_type] || StockChart::RANGE_TYPE_HASH[StockChart::FIVE_YEAR]
+    @stock_paginator, @stocks = StockDomain::Query.base_stock_info(conditions, order, @current_price_day, @latest_first_year, @latest_chart_day, range_type, params[:page])
 
     @parameter_example = @stocks.first
     @categories = Stock.select("DISTINCT category").map(&:category)

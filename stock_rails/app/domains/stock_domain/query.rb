@@ -1,6 +1,6 @@
 module StockDomain::Query
   class << self
-    def base_stock_info(conditions, order, current_price_day, latest_first_year, page)
+    def base_stock_info(conditions, order, current_price_day, latest_first_year, chart_day, range_type, page)
       stock_paginator = Stock
         .joins("LEFT OUTER JOIN stock_conditions ON stocks.id = stock_conditions.stock_id")
         .joins("LEFT OUTER JOIN stock_financial_conditions ON stocks.id = stock_financial_conditions.stock_id")
@@ -8,6 +8,7 @@ module StockDomain::Query
         .joins("LEFT OUTER JOIN stock_prices ON stocks.id = stock_prices.stock_id AND stock_prices.day = '#{current_price_day}'")
         .joins("LEFT OUTER JOIN stock_performances AS latest_performances ON stocks.id = latest_performances.stock_id AND latest_performances.year = '#{latest_first_year}'")
         .joins("LEFT OUTER JOIN stock_performances AS ref_performances ON stocks.id = ref_performances.stock_id AND ref_performances.year = '#{latest_first_year - 1}'")
+        .joins("LEFT OUTER JOIN stock_charts ON stocks.id = stock_charts.stock_id AND stock_charts.day = '#{chart_day}' AND stock_charts.range_type = #{range_type}")
         .where(conditions)
         .order(order)
         .page(page)
@@ -24,6 +25,8 @@ module StockDomain::Query
                 , stock_financial_conditions.is_nikkei_average_group
                 , stock_financial_conditions.shareholder_equity
                 , stock_prices.price
+                , stock_charts.id as chart_id
+                , stock_charts.image
 
                 , latest_performances.net_sales AS latest_net_sales
                 , ref_performances.net_sales AS ref_net_sales

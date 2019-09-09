@@ -24,14 +24,6 @@
           <%= link_to "▲", "#", onclick: "change_order(event, 'code1')" %>
         </th>
         <th>
-          時価総額(百万)<br><%= link_to "▼", "#", onclick: "change_order(event, 'market_capitalization2')" %>&nbsp;/&nbsp;
-          <%= link_to "▲", "#", onclick: "change_order(event, 'market_capitalization1')" %>
-        </th>
-        <th>
-          株価(<%= @current_price_day %>)<br><%= link_to "▼", "#", onclick: "change_order(event, 'price2')" %>&nbsp;/&nbsp;
-          <%= link_to "▲", "#", onclick: "change_order(event, 'price1')" %>
-        </th>
-        <th>
           業種<br><%= link_to "▼", "#", onclick: "change_order(event, 'category2')" %>&nbsp;/&nbsp;
           <%= link_to "▲", "#", onclick: "change_order(event, 'category1')" %>
         </th>
@@ -43,11 +35,19 @@
           特色
         </th>
         <th>
-          上場年<br><%= link_to "▼", "#", onclick: "change_order(event, 'listed_year2')" %>&nbsp;/&nbsp;
-          <%= link_to "▲", "#", onclick: "change_order(event, 'listed_year1')" %>
+          チャート
         </th>
         <th>
-          日経225入り
+          時価総額(百万)<br><%= link_to "▼", "#", onclick: "change_order(event, 'market_capitalization2')" %>&nbsp;/&nbsp;
+          <%= link_to "▲", "#", onclick: "change_order(event, 'market_capitalization1')" %>
+        </th>
+        <th>
+          株価(<%= @current_price_day %>)<br><%= link_to "▼", "#", onclick: "change_order(event, 'price2')" %>&nbsp;/&nbsp;
+          <%= link_to "▲", "#", onclick: "change_order(event, 'price1')" %>
+        </th>
+        <th>
+          上場年<br><%= link_to "▼", "#", onclick: "change_order(event, 'listed_year2')" %>&nbsp;/&nbsp;
+          <%= link_to "▲", "#", onclick: "change_order(event, 'listed_year1')" %>
         </th>
         <th>
           売上高(百万)<br><%= link_to "▼", "#", onclick: "change_order(event, 'net_sales_profit_rate2')" %>&nbsp;/&nbsp;
@@ -88,12 +88,6 @@
             <% if stock["net_sales_profit_rate"].present? && stock["net_sales_profit_rate"] >= 10 %><br>(営業利益↑↑)<% end %>
           </td>
           <td>
-            <% if stock["market_capitalization"].present? %>
-              <%= stock["market_capitalization"].to_s(:delimited) %>
-            <% end %>
-          </td>
-          <td><%= stock["price"]&.to_s(:delimited) %></td>
-          <td>
             <%= link_to stock["category"], "#", onclick: "change_category(event, '#{stock["category"]}')" %>
           </td>
           <td>
@@ -107,8 +101,18 @@
               <%= stock["feature"] %>
             </details>
           </td>
+          <td>
+            <% if stock["image"] %>
+              <img src="/stockapp/chart_images/stock_chart/image/<%= stock["chart_id"] %>/<%= stock["image"] %>" style="width: 100px;" />
+            <% end %>
+          </td>
+          <td>
+            <% if stock["market_capitalization"].present? %>
+              <%= stock["market_capitalization"].to_s(:delimited) %>
+            <% end %>
+          </td>
+          <td><%= stock["price"]&.to_s(:delimited) %></td>
           <td><%= stock["listed_year"] %>.<%= stock["listed_month"] %></td>
-          <td><%= stock["is_nikkei_average_group"] %></td>
           <td>
             <% if stock["latest_net_sales"].present? && stock["ref_net_sales"].present? && stock["net_sales_profit_rate"].present? %>
               <%= @latest_first_year %>年<br><%= stock["latest_net_sales"]&.to_s(:delimited) %>
