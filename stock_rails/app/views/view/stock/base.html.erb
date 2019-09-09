@@ -85,7 +85,7 @@
             </a>
             <% if stock["is_nikkei_average_group"].present? && stock["is_nikkei_average_group"] == 1 %><br>(日経225)<% end %>
             <% if stock["listed_year"].present? && stock["listed_year"] <= 5 %><br>(新上場)<% end %>
-            <% if stock["net_sales_profit_rate"].present? && stock["net_sales_profit_rate"] >= 10 %><br>(営業利益↑↑)<% end %>
+            <% if stock["operating_income_profit_rate"].present? && stock["operating_income_profit_rate"] >= 10 %><br>(営業利益↑↑)<% end %>
           </td>
           <td>
             <%= link_to stock["category"], "#", onclick: "change_category(event, '#{stock["category"]}')" %>
