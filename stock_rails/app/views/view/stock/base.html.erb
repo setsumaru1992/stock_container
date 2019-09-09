@@ -125,7 +125,7 @@
             <% if stock["latest_operating_income"].present? && stock["ref_operating_income"].present? && stock["operating_income_profit_rate"].present? %>
               <%= @latest_first_year %>年<br><%= stock["latest_operating_income"]&.to_s(:delimited) %>
               <br><%= @latest_first_year - 1 %>年<br><%= stock["ref_operating_income"]&.to_s(:delimited) %>
-              <br><%= stock["net_sales_profit_rate"] > 0 ? "△" : "▼" %><%= stock["operating_income_profit_rate"].round(2).abs&.to_s(:delimited) %>
+              <br><%= stock["operating_income_profit_rate"] > 0 ? "△" : "▼" %><%= stock["operating_income_profit_rate"].round(2).abs&.to_s(:delimited) %>
               %
             <% end %>
           </td>
@@ -133,7 +133,7 @@
             <% if stock["latest_ordinary_income"].present? && stock["ref_ordinary_income"].present? && stock["ordinary_income_profit_rate"].present? %>
               <%= @latest_first_year %>年<br><%= stock["latest_ordinary_income"]&.to_s(:delimited) %>
               <br><%= @latest_first_year - 1 %>年<br><%= stock["ref_ordinary_income"]&.to_s(:delimited) %>
-              <br><%= stock["net_sales_profit_rate"] > 0 ? "△" : "▼" %><%= stock["ordinary_income_profit_rate"].round(2).abs&.to_s(:delimited) %>
+              <br><%= stock["ordinary_income_profit_rate"] > 0 ? "△" : "▼" %><%= stock["ordinary_income_profit_rate"].round(2).abs&.to_s(:delimited) %>
               %
             <% end %>
           </td>
@@ -141,7 +141,7 @@
             <% if stock["latest_net_income"].present? && stock["ref_net_income"].present? && stock["net_income_profit_rate"].present? %>
               <%= @latest_first_year %>年<br><%= stock["latest_net_income"]&.to_s(:delimited) %>
               <br><%= @latest_first_year - 1 %>年<br><%= stock["ref_net_income"]&.to_s(:delimited) %>
-              <br><%= stock["net_sales_profit_rate"] > 0 ? "△" : "▼" %><%= stock["net_income_profit_rate"].round(2).abs&.to_s(:delimited) %>
+              <br><%= stock["net_income_profit_rate"] > 0 ? "△" : "▼" %><%= stock["net_income_profit_rate"].round(2).abs&.to_s(:delimited) %>
               %
             <% end %>
           </td>
