@@ -55,6 +55,13 @@ module StockDomain
         day = day_of_price(day: day) if day == Date.today
         codes = ::StockDomain::Repository.stock_codes
 
+        # TODO 以下暫定処理を消す。計1GBの画像を作るため、古いものを消す処理
+        path = "/var/opt/stock_container/chart_images/stock_chart/image"
+        begin
+          FileUtils.rm_r(path)
+        rescue => e
+          Rails.logger.info("#{path}はすでに削除済みです。")
+        end
         codes.each do |code|
           entity = self.new(code)
           begin
