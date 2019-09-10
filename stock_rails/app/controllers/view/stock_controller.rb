@@ -52,6 +52,20 @@ class View::StockController < ApplicationController
     @categories = Stock.select("DISTINCT category").map(&:category)
   end
 
+  def favorite
+    redirect_to request.referer
+    id = params[:stock_id]&.to_i
+    stock_favorite_dao = Stock.find(id).stock_favorites
+    exist_stock_favorite = stock_favorite_dao.first
+    if params[:favorite] == "1"
+      return if exist_stock_favorite.present?
+      stock_favorite_dao.new.save
+    else
+      return if exist_stock_favorite.blank?
+      exist_stock_favorite.destroy
+    end
+  end
+
   private
 
   def parse_order_param(order_params, default_order)
