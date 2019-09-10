@@ -9,6 +9,7 @@ module StockDomain::Query
         .joins("LEFT OUTER JOIN stock_performances AS latest_performances ON stocks.id = latest_performances.stock_id AND latest_performances.year = '#{latest_first_year}'")
         .joins("LEFT OUTER JOIN stock_performances AS ref_performances ON stocks.id = ref_performances.stock_id AND ref_performances.year = '#{latest_first_year - 1}'")
         .joins("LEFT OUTER JOIN stock_charts ON stocks.id = stock_charts.stock_id AND stock_charts.day = '#{chart_day}' AND stock_charts.range_type = #{range_type}")
+        .joins("LEFT OUTER JOIN stock_favorites ON stocks.id = stock_favorites.stock_id")
         .where(conditions)
         .order(order)
         .page(page)
@@ -27,6 +28,7 @@ module StockDomain::Query
                 , stock_prices.price
                 , stock_charts.id as chart_id
                 , stock_charts.image
+                , stock_favorites.created_at AS favorite_date
 
                 , latest_performances.net_sales AS latest_net_sales
                 , ref_performances.net_sales AS ref_net_sales

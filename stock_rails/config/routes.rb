@@ -6,6 +6,7 @@ Rails.application.routes.draw do
       get "stock", to: "stock#base"
       get "stock/base", to: "stock#base"
       get "stock/chart", to: "stock#chart"
+      get "stock/favorite", to: "stock#favorite"
     end
 
     namespace :view do

@@ -83,9 +83,19 @@
             <a href="https://moyamoya.space/dailyutil/stockInfo/access2sbi_chart?stock_code=<%= stock["code"] %>" target="blank">
               <%= stock["name"] %>
             </a>
+            <% if stock["favorite_date"].present? %><br>⭐<% end %>
             <% if stock["is_nikkei_average_group"].present? && stock["is_nikkei_average_group"] == 1 %><br>(日経225)<% end %>
             <% if stock["listed_year"].present? && stock["listed_year"] <= 5 %><br>(新上場)<% end %>
             <% if stock["operating_income_profit_rate"].present? && stock["operating_income_profit_rate"] >= 10 %><br>(営業利益↑↑)<% end %>
+            <br>
+            <%= form_tag view_stock_favorite_path, method: "get" do |f| %>
+              <input type="hidden" name="stock_id" value="<%= stock["id"] %>" />
+              <% if stock["favorite_date"].present? %>
+                <input type="hidden" name="favorite" value="0"><input type="submit" value="お気に入り解除">
+              <% else %>
+                <input type="hidden" name="favorite" value="1"><input type="submit" value="お気に入り">
+              <% end %>
+            <% end %>
           </td>
           <td>
             <%= link_to stock["category"], "#", onclick: "change_category(event, '#{stock["category"]}')" %>

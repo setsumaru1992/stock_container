@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2019_09_08_111611) do
+ActiveRecord::Schema.define(version: 2019_09_10_152539) do
 
   create_table "api_keys", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
     t.bigint "user_id"
@@ -57,6 +57,13 @@ ActiveRecord::Schema.define(version: 2019_09_08_111611) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["stock_id"], name: "index_stock_conditions_on_stock_id"
+  end
+
+  create_table "stock_favorites", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
+    t.bigint "stock_id"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["stock_id"], name: "index_stock_favorites_on_stock_id"
   end
 
   create_table "stock_financial_conditions", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
@@ -153,6 +160,7 @@ ActiveRecord::Schema.define(version: 2019_09_08_111611) do
   add_foreign_key "bot_notice_slacks", "users"
   add_foreign_key "sbi_credentials", "users"
   add_foreign_key "stock_conditions", "stocks"
+  add_foreign_key "stock_favorites", "stocks"
   add_foreign_key "stock_financial_conditions", "stocks"
   add_foreign_key "stock_mean_prices", "stocks"
   add_foreign_key "stock_performances", "stocks"

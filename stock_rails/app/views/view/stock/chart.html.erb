@@ -53,6 +53,7 @@
             <a href="https://moyamoya.space/dailyutil/stockInfo/access2sbi_chart?stock_code=<%= stock["code"] %>" target="blank">
               <%= stock["name"] %>
             </a>
+            ️
             <% if stock["is_nikkei_average_group"].present? && stock["is_nikkei_average_group"] == 1 %><br>(日経225)<% end %>
             <% if stock["listed_year"].present? && stock["listed_year"] <= 5 %><br>(新上場)<% end %>
           </td>
