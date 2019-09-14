@@ -4,7 +4,7 @@ module WebAccessor
 
     def access(pre_access_params: {}, post_access_params: {}, &process)
       begin
-        @accessor ||= gen_accessor
+        @accessor = gen_accessor
         pre_access(@accessor, pre_access_params)
         yield(@accessor)
         post_access(@accessor, post_access_params)
