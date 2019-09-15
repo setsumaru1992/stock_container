@@ -7,5 +7,5 @@ class Stock < ApplicationRecord
   has_many :stock_charts
   has_many :stock_favorites
 
-  paginates_per 200
+  paginates_per 100
 end

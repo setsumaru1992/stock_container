@@ -1,6 +1,6 @@
 module StockDomain::Query
   class << self
-    def base_stock_info(conditions, order, current_price_day, latest_first_year, chart_day, range_type, page)
+    def base_stock_info(conditions, not_condition, order, current_price_day, latest_first_year, chart_day, range_type, page)
       stock_paginator = Stock
         .joins("LEFT OUTER JOIN stock_conditions ON stocks.id = stock_conditions.stock_id")
         .joins("LEFT OUTER JOIN stock_financial_conditions ON stocks.id = stock_financial_conditions.stock_id")
@@ -11,6 +11,7 @@ module StockDomain::Query
         .joins("LEFT OUTER JOIN stock_charts ON stocks.id = stock_charts.stock_id AND stock_charts.day = '#{chart_day}' AND stock_charts.range_type = #{range_type}")
         .joins("LEFT OUTER JOIN stock_favorites ON stocks.id = stock_favorites.stock_id")
         .where(conditions)
+        .where.not(not_condition)
         .order(order)
         .page(page)
         .select("
@@ -63,30 +64,6 @@ module StockDomain::Query
                   END) AS net_income_profit_rate
                 , stock_financial_conditions.market_capitalization / latest_performances.net_income AS per
                 , stock_financial_conditions.market_capitalization / stock_financial_conditions.shareholder_equity AS pbr
-                ")
-      stocks =  stock_paginator.map { |stock| stock.attributes}
-      [stock_paginator, stocks]
-    end
-
-    def chart(conditions, order, day, range_type, page)
-      stock_paginator = Stock
-        .where(conditions)
-        .order(order)
-        .page(page)
-        .joins("LEFT OUTER JOIN stock_conditions ON stocks.id = stock_conditions.stock_id")
-        .joins("LEFT OUTER JOIN stock_financial_conditions ON stocks.id = stock_financial_conditions.stock_id")
-        .joins("LEFT OUTER JOIN stock_charts ON stocks.id = stock_charts.stock_id AND stock_charts.day = '#{day}' AND stock_charts.range_type = #{range_type}")
-        .select("
-                stocks.id
-                , stocks.code
-                , stocks.name
-                , stocks.category
-                , stock_conditions.feature
-                , stock_conditions.category_rank
-                , stocks.listed_year
-                , stock_financial_conditions.is_nikkei_average_group
-                , stock_charts.id as chart_id
-                , stock_charts.image
 
                 , (
                   SELECT smp.day

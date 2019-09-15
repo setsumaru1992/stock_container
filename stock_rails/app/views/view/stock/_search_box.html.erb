@@ -28,10 +28,17 @@
       <%= category %>
     </option>
   <% end %>
-</select>
-  <label><input type="checkbox" name="only_nikkei225" value="on"
-                <% if only_nikkei225 == "on" %>checked
-                <% end %>>日経225のみ</label><br>
+</select><br>
+  <label>
+    <input type="checkbox" name="only_nikkei225" value="on"
+                <% if only_nikkei225 == "on" %>checked<% end %>
+    >日経225のみ
+  </label><br>
+  <label>
+    <input type="checkbox" name="only_favorite" value="on"
+           <% if only_favorite == "on" %>checked<% end %>
+    >お気に入りのみ
+  </label><br>
   <button type="submit" id="search">検索</button>
 <% end %><br>
 <details>

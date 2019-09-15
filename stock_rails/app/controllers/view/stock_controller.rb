@@ -3,11 +3,18 @@ class View::StockController < ApplicationController
     @order = params[:order] || ""
     @category = params[:category] || ""
     @only_nikkei225 = params[:only_nikkei225] || "off"
+    @only_favorite = params[:only_favorite] || "off"
 
     conditions = {}
+    not_condition = {}
     if @only_nikkei225 == "on"
       conditions[:stock_financial_conditions] ||= {}
       conditions[:stock_financial_conditions][:is_nikkei_average_group] = true
+    end
+
+    if @only_favorite == "on"
+      not_condition[:stock_favorites] ||= {}
+      not_condition[:stock_favorites][:id] = nil
     end
 
     if @category.present?
@@ -20,33 +27,7 @@ class View::StockController < ApplicationController
     @current_price_day = StockPrice.last.day
     @latest_chart_day = StockChart.order("day DESC").first.day
     range_type = params[:range_type] || StockChart::RANGE_TYPE_HASH[StockChart::FIVE_YEAR]
-    @stock_paginator, @stocks = StockDomain::Query.base_stock_info(conditions, order, @current_price_day, @latest_first_year, @latest_chart_day, range_type, params[:page])
-
-    @parameter_example = @stocks.first
-    @categories = Stock.select("DISTINCT category").map(&:category)
-  end
-
-  def chart
-    @order = params[:order] || ""
-    @category = params[:category] || ""
-    @category = params[:category] || ""
-    @only_nikkei225 = params[:only_nikkei225] || "off"
-
-    conditions = {}
-    if @only_nikkei225 == "on"
-      conditions[:stock_financial_conditions] ||= {}
-      conditions[:stock_financial_conditions][:is_nikkei_average_group] = true
-    end
-
-    if @category.present?
-      conditions[:stocks] ||= {}
-      conditions[:stocks][:category] = @category
-    end
-
-    order = parse_order_param(params[:order], order_hash[:day_of_week_golden_cross][:desc])
-    @latest_chart_day = StockChart.order("day DESC").first.day
-    range_type = params[:range_type] || StockChart::RANGE_TYPE_HASH[StockChart::FIVE_YEAR]
-    @stock_paginator, @stocks = StockDomain::Query.chart(conditions, order, @latest_chart_day, range_type, params[:page])
+    @stock_paginator, @stocks = StockDomain::Query.base_stock_info(conditions, not_condition, order, @current_price_day, @latest_first_year, @latest_chart_day, range_type, params[:page])
 
     @parameter_example = @stocks.first
     @categories = Stock.select("DISTINCT category").map(&:category)
