@@ -1,6 +1,6 @@
 Rails.application.routes.draw do
   scope :stockapp do
-    root to: "views/stock#base"
+    root to: "view/stock#base"
 
     namespace :view do
       get "stock", to: "stock#base"

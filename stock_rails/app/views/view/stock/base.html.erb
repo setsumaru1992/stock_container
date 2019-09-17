@@ -119,9 +119,7 @@
             </details>
           </td>
           <td class="chart">
-            <% if stock["image"] %>
-              <img src="/stockapp/chart_images/stock_chart/image/<%= stock["chart_id"] %>/<%= stock["image"] %>" style="width: 100px;" />
-            <% end %>
+            <%= render partial: "stock_chart", locals: {image: stock["image"], chart_id: stock["chart_id"]} %>
           </td>
           <td class="market_capitalization">
             <% if stock["market_capitalization"].present? %>
@@ -218,13 +216,16 @@
         overflow: scroll;
         height: 80px;
       ">
-      <label><input type="checkbox" id="display_base" onchange="switchFieldsVisiblity('base')" checked>基本情報</label>：
+      <label><input type="checkbox" id="display_base" onchange="switchFieldsVisiblity('base')"checked>基本情報</label>：
       <label><input type="checkbox" id="display_category" onchange="switchVisiblity('category')" checked>業種</label>
       <label><input type="checkbox" id="display_feature" onchange="switchVisiblity('feature')" checked>特徴</label>
       <label><input type="checkbox" id="display_chart" onchange="switchVisiblity('chart')" checked>チャート</label>
       <label><input type="checkbox" id="display_market_capitalization" onchange="switchVisiblity('market_capitalization')" checked>時価総額</label>
       <label><input type="checkbox" id="display_price" onchange="switchVisiblity('price')" checked>株価</label>
       <label><input type="checkbox" id="display_listed_year" onchange="switchVisiblity('listed_year')" checked>上場年</label>
+
+      <br><label><input type="checkbox" id="display_chart" onchange="switchVisiblity('chart')" checked>チャート</label>：
+        <label><input type="radio" name="" id="">5年</label>
 
       <br><label><input type="checkbox" id="display_grade" onchange="switchFieldsVisiblity('grade')" checked>営業成績</label>：
       <label><input type="checkbox" id="display_latest_net_sales" onchange="switchVisiblity('latest_net_sales')" checked>売上高</label>
