@@ -65,11 +65,17 @@
           <%= link_to "▲", "#", onclick: "change_order(event, 'net_income_profit_rate1')" %>
         </th>
         <th class="per">
-          <details><summary>PER</summary>=<br>時価総額÷純利益<br>低いなら割安</details><%= link_to "▼", "#", onclick: "change_order(event, 'per2')" %>&nbsp;/&nbsp;
+          <details>
+            <summary>PER</summary>
+            =<br>時価総額÷純利益<br>低いなら割安
+          </details><%= link_to "▼", "#", onclick: "change_order(event, 'per2')" %>&nbsp;/&nbsp;
           <%= link_to "▲", "#", onclick: "change_order(event, 'per1')" %>
         </th>
         <th class="pbr">
-          <details><summary>PBR</summary>=<br>時価総額÷自己資本<br>低いなら割安</details><%= link_to "▼", "#", onclick: "change_order(event, 'pbr2')" %>&nbsp;/&nbsp;
+          <details>
+            <summary>PBR</summary>
+            =<br>時価総額÷自己資本<br>低いなら割安
+          </details><%= link_to "▼", "#", onclick: "change_order(event, 'pbr2')" %>&nbsp;/&nbsp;
           <%= link_to "▲", "#", onclick: "change_order(event, 'pbr1')" %>
         </th>
         <th class="day_golden_cross">日足GoldenCross<br><%= link_to "▼", "#", onclick: "change_order(event, 'day_of_day_golden_cross2')" %>&nbsp;/&nbsp;
@@ -90,13 +96,17 @@
             <a href="https://moyamoya.space/dailyutil/stockInfo/access2sbi_chart?stock_code=<%= stock["code"] %>" target="blank">
               <%= stock["name"] %>
             </a>
-            <% if stock["favorite_date"].present? %><br>⭐<% end %>
-            <% if stock["is_nikkei_average_group"].present? && stock["is_nikkei_average_group"] == 1 %><br>(日経225)<% end %>
-            <% if stock["listed_year"].present? && stock["listed_year"] <= 5 %><br>(新上場)<% end %>
-            <% if stock["operating_income_profit_rate"].present? && stock["operating_income_profit_rate"] >= 10 %><br>(営業利益↑↑)<% end %>
+            <% if stock["favorite_date"].present? %><br>⭐
+            <% end %>
+            <% if stock["is_nikkei_average_group"].present? && stock["is_nikkei_average_group"] == 1 %><br>(日経225)
+            <% end %>
+            <% if stock["listed_year"].present? && stock["listed_year"] <= 5 %><br>(新上場)
+            <% end %>
+            <% if stock["operating_income_profit_rate"].present? && stock["operating_income_profit_rate"] >= 10 %><br>(営業利益↑↑)
+            <% end %>
             <br>
             <%= form_tag view_stock_favorite_path, method: "get" do |f| %>
-              <input type="hidden" name="stock_id" value="<%= stock["id"] %>" />
+              <input type="hidden" name="stock_id" value="<%= stock["id"] %>"/>
               <% if stock["favorite_date"].present? %>
                 <input type="hidden" name="favorite" value="0"><input type="submit" value="お気に入り解除">
               <% else %>
@@ -198,7 +208,7 @@
   <%= paginate @stock_paginator %>
   <div style="height: 100px;"></div>
   <div style="
-      position: fixed;
+  position: fixed;
       height: 100px;
       width: 100%;
       background-color: white;
@@ -213,34 +223,34 @@
     <div>
       表示項目
       <div style="
-        overflow: scroll;
-        height: 80px;
+      overflow: scroll;
+          height: 80px;
       ">
-      <label><input type="checkbox" id="display_base" onchange="switchFieldsVisiblity('base')"checked>基本情報</label>：
-      <label><input type="checkbox" id="display_category" onchange="switchVisiblity('category')" checked>業種</label>
-      <label><input type="checkbox" id="display_feature" onchange="switchVisiblity('feature')" checked>特徴</label>
-      <label><input type="checkbox" id="display_chart" onchange="switchVisiblity('chart')" checked>チャート</label>
-      <label><input type="checkbox" id="display_market_capitalization" onchange="switchVisiblity('market_capitalization')" checked>時価総額</label>
-      <label><input type="checkbox" id="display_price" onchange="switchVisiblity('price')" checked>株価</label>
-      <label><input type="checkbox" id="display_listed_year" onchange="switchVisiblity('listed_year')" checked>上場年</label>
+        <label><input type="checkbox" id="display_base" onchange="switchFieldsVisiblity('base')" checked>基本情報</label>：
+        <label><input type="checkbox" id="display_category" onchange="switchVisiblity('category')" checked>業種</label>
+        <label><input type="checkbox" id="display_feature" onchange="switchVisiblity('feature')" checked>特徴</label>
+        <label><input type="checkbox" id="display_chart" onchange="switchVisiblity('chart')" checked>チャート</label>
+        <label><input type="checkbox" id="display_market_capitalization" onchange="switchVisiblity('market_capitalization')" checked>時価総額</label>
+        <label><input type="checkbox" id="display_price" onchange="switchVisiblity('price')" checked>株価</label>
+        <label><input type="checkbox" id="display_listed_year" onchange="switchVisiblity('listed_year')" checked>上場年</label>
 
-      <br><label><input type="checkbox" id="display_chart" onchange="switchVisiblity('chart')" checked>チャート</label>：
+        <br><label><input type="checkbox" id="display_chart" onchange="switchVisiblity('chart')" checked>チャート</label>：
         <label><input type="radio" name="" id="">5年</label>
 
-      <br><label><input type="checkbox" id="display_grade" onchange="switchFieldsVisiblity('grade')" checked>営業成績</label>：
-      <label><input type="checkbox" id="display_latest_net_sales" onchange="switchVisiblity('latest_net_sales')" checked>売上高</label>
-      <label><input type="checkbox" id="display_latest_operating_income" onchange="switchVisiblity('latest_operating_income')" checked>営業利益</label>
-      <label><input type="checkbox" id="display_latest_ordinary_income" onchange="switchVisiblity('latest_ordinary_income')" checked>経常利益</label>
-      <label><input type="checkbox" id="display_latest_net_income" onchange="switchVisiblity('latest_net_income')" checked>純利益</label>
-      <label><input type="checkbox" id="display_per" onchange="switchVisiblity('per')" checked>PER</label>
-      <label><input type="checkbox" id="display_pbr" onchange="switchVisiblity('pbr')" checked>PBR</label>
+        <br><label><input type="checkbox" id="display_grade" onchange="switchFieldsVisiblity('grade')" checked>営業成績</label>：
+        <label><input type="checkbox" id="display_latest_net_sales" onchange="switchVisiblity('latest_net_sales')" checked>売上高</label>
+        <label><input type="checkbox" id="display_latest_operating_income" onchange="switchVisiblity('latest_operating_income')" checked>営業利益</label>
+        <label><input type="checkbox" id="display_latest_ordinary_income" onchange="switchVisiblity('latest_ordinary_income')" checked>経常利益</label>
+        <label><input type="checkbox" id="display_latest_net_income" onchange="switchVisiblity('latest_net_income')" checked>純利益</label>
+        <label><input type="checkbox" id="display_per" onchange="switchVisiblity('per')" checked>PER</label>
+        <label><input type="checkbox" id="display_pbr" onchange="switchVisiblity('pbr')" checked>PBR</label>
 
-      <br><label><input type="checkbox" id="display_cross" onchange="switchFieldsVisiblity('cross')">クロス有無</label>：
-      <label><input type="checkbox" id="display_day_golden_cross" onchange="switchVisiblity('day_golden_cross')">日足ゴールデンクロス</label>
-      <label><input type="checkbox" id="display_day_dead_cross" onchange="switchVisiblity('day_dead_cross')">日足デッドクロス</label>
-      <label><input type="checkbox" id="display_week_golden_cross" onchange="switchVisiblity('week_golden_cross')">週足ゴールデンクロス</label>
-      <label><input type="checkbox" id="display_week_dead_cross" onchange="switchVisiblity('week_dead_cross')">週足デッドクロス</label>
-    </div>
+        <br><label><input type="checkbox" id="display_cross" onchange="switchFieldsVisiblity('cross')">クロス有無</label>：
+        <label><input type="checkbox" id="display_day_golden_cross" onchange="switchVisiblity('day_golden_cross')">日足ゴールデンクロス</label>
+        <label><input type="checkbox" id="display_day_dead_cross" onchange="switchVisiblity('day_dead_cross')">日足デッドクロス</label>
+        <label><input type="checkbox" id="display_week_golden_cross" onchange="switchVisiblity('week_golden_cross')">週足ゴールデンクロス</label>
+        <label><input type="checkbox" id="display_week_dead_cross" onchange="switchVisiblity('week_dead_cross')">週足デッドクロス</label>
+      </div>
     </div>
   </div>
 <% end %>
