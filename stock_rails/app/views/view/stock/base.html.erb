@@ -78,14 +78,10 @@
           </details><%= link_to "▼", "#", onclick: "change_order(event, 'pbr2')" %>&nbsp;/&nbsp;
           <%= link_to "▲", "#", onclick: "change_order(event, 'pbr1')" %>
         </th>
-        <th class="day_golden_cross">日足GoldenCross<br><%= link_to "▼", "#", onclick: "change_order(event, 'day_of_day_golden_cross2')" %>&nbsp;/&nbsp;
-          <%= link_to "▲", "#", onclick: "change_order(event, 'day_of_day_golden_cross1')" %></th>
-        <th class="day_dead_cross">日足DeadCross<br><%= link_to "▼", "#", onclick: "change_order(event, 'day_of_day_dead_cross2')" %>&nbsp;/&nbsp;
-          <%= link_to "▲", "#", onclick: "change_order(event, 'day_of_day_dead_cross1')" %></th>
-        <th class="week_golden_cross">週足GoldenCross<br><%= link_to "▼", "#", onclick: "change_order(event, 'day_of_week_golden_cross2')" %>&nbsp;/&nbsp;
-          <%= link_to "▲", "#", onclick: "change_order(event, 'day_of_week_golden_cross1')" %></th>
-        <th class="week_dead_cross">週足DeadCross<br><%= link_to "▼", "#", onclick: "change_order(event, 'day_of_week_dead_cross2')" %>&nbsp;/&nbsp;
-          <%= link_to "▲", "#", onclick: "change_order(event, 'day_of_week_dead_cross1')" %></th>
+        <th class="day_golden_cross">日足GoldenCross<br><%= link_to "▼", "#", onclick: "change_order(event, 'day_of_day_golden_cross2')" %></th>
+        <th class="day_dead_cross">日足DeadCross<br><%= link_to "▼", "#", onclick: "change_order(event, 'day_of_day_dead_cross2')" %></th>
+        <th class="week_golden_cross">週足GoldenCross<br><%= link_to "▼", "#", onclick: "change_order(event, 'day_of_week_golden_cross2')" %></th>
+        <th class="week_dead_cross">週足DeadCross<br><%= link_to "▼", "#", onclick: "change_order(event, 'day_of_week_dead_cross2')" %></th>
       </tr>
       </thead>
       <tbody>
@@ -229,13 +225,14 @@
         <label><input type="checkbox" id="display_base" onchange="switchFieldsVisiblity('base')" checked>基本情報</label>：
         <label><input type="checkbox" id="display_category" onchange="switchVisiblity('category')">業種</label>
         <label><input type="checkbox" id="display_feature" onchange="switchVisiblity('feature')">特徴</label>
-        <label><input type="checkbox" id="display_chart" onchange="switchVisiblity('chart')">チャート</label>
         <label><input type="checkbox" id="display_market_capitalization" onchange="switchVisiblity('market_capitalization')">時価総額</label>
         <label><input type="checkbox" id="display_price" onchange="switchVisiblity('price')">株価</label>
         <label><input type="checkbox" id="display_listed_year" onchange="switchVisiblity('listed_year')">上場年</label>
 
-        <br><label><input type="checkbox" id="display_chart" onchange="switchVisiblity('chart')" checked>チャート</label>：
-        <label><input type="radio" name="" id="">5年</label>
+        <br><label><input type="checkbox" id="display_chart" onchange="switchFieldsVisiblity('chart')" checked>チャート</label>：
+        <label><input type="radio" name="display_chart_radio" id="display_chart_one_year">1年</label>&nbsp;
+        <label><input type="radio" name="display_chart_radio" id="display_chart_five_year" checked>5年</label>&nbsp;
+        <label><input type="radio" name="display_chart_radio" id="display_chart_ten_year">10年</label>&nbsp;
 
         <br><label><input type="checkbox" id="display_grade" onchange="switchFieldsVisiblity('grade')" checked>営業成績</label>：
         <label><input type="checkbox" id="display_latest_net_sales" onchange="switchVisiblity('latest_net_sales')">売上高</label>
