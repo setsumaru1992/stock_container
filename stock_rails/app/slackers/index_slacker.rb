@@ -34,6 +34,7 @@ class IndexSlacker < ApplicationSlacker
 【#{value.index_name}】
 (現在)#{price} (前日)#{ref_price}
 (差分)#{profit(ref_price, price)}(#{profit_rate(ref_price, price)}%)
+TODO: 表示はしているがDBに値登録していないため修正
 #{index_price_page_url_of(value.index_code)}
     EOS
   end

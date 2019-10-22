@@ -3,7 +3,7 @@ module IndexDomain
     class << self
       def get_index_prices(need_chart: false)
         [
-          # ::IndexDomain::Codes::NIKKEI_AVERAGE,
+          ::IndexDomain::Codes::NIKKEI_AVERAGE,
           ::IndexDomain::Codes::DOW_AVERAGE
         ].map do |index_code|
           index_price = ::WebAccessor::Sbi::IndexPrice.new.get_price_of(index_code)
