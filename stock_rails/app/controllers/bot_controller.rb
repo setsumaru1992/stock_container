@@ -51,7 +51,7 @@ class BotController < ApplicationController
     response = {
       status: "success"
     }
-    index_prices = ::IndexDomain::Entity.get_index_prices
+    index_prices = ::IndexDomain::Entity.get_index_prices(need_chart: true)
     index_slack_values = index_prices.map do |index_price|
       ::IndexSlacker.build_index_slack_value(index_price)
     end

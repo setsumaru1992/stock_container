@@ -1,4 +1,6 @@
 class IndexSlacker < ApplicationSlacker
+  NO_VALUE = "--".freeze
+
   class << self
     def build_index_slack_value(index_price_value)
       value = IndexSlackValue.new(index_price_value.code)
@@ -26,10 +28,24 @@ class IndexSlacker < ApplicationSlacker
   end
 
   def index_message(value)
+    price = value.index_price_value.price
+    ref_price = value.index_price_value.reference_price
     <<-EOS
 【#{value.index_name}】
+(現在)#{price} (前日)#{ref_price}
+(差分)#{profit(ref_price, price)}(#{profit_rate(ref_price, price)}%)
 #{index_price_page_url_of(value.index_code)}
     EOS
+  end
+
+  def profit(before, after)
+    return NO_VALUE unless before.is_a?(Numeric) && after.is_a?(Numeric)
+    after - before
+  end
+
+  def profit_rate(before, after)
+    return NO_VALUE unless before.is_a?(Numeric) && after.is_a?(Numeric)
+    ((after - before).fdiv(before) * 100).round(1)
   end
 
   def index_price_page_url_of(index_code)

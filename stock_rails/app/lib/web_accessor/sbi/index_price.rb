@@ -2,7 +2,25 @@ module WebAccessor
   module Sbi
     class IndexPrice < Base
       def get_price_of(index_code)
+        index_price_value = IndexPriceValue.new
+        index_price_value.code = index_code
 
+        access do |accessor|
+          visit(index_price_page_url_of(index_code))
+
+          no_value = "--"
+          index_price_value.price = get_content(selector: "//*[@id='idxdtlPrice']/em") do |content|
+            price_icon = get_content(selector: "//*[@id='idxdtlPrice']/em/span")
+            content = content.gsub(price_icon, "")
+            break if content == no_value
+            content.gsub(",", "").to_i
+          end
+          index_price_value.reference_price = get_content(selector: "//*[@id='idxdtlClose']/b") do |content|
+            break if content == no_value
+            content.gsub(",", "").to_i
+          end
+        end
+        index_price_value
       end
 
       def get_concated_price_chart_image_path_of(index_code)
