@@ -137,9 +137,4 @@ https://moyamoya.space/dailyutil/stockInfo/access2sbi_chart?stock_code=#{stock_v
     ]
     "決算：#{settlement_month}月(#{settlement_months.join(", ")}月)\n"
   end
-
-  def parse_image_path_to_image_url(image_path)
-    path = image_path.gsub("/var/opt/stock_container/", "")
-    "https://kibotsu.com/stockapp/#{path}"
-  end
 end

@@ -1,0 +1,2 @@
+class IndexPrice < ApplicationRecord
+end
