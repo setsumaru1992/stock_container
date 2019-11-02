@@ -2,17 +2,36 @@ module WebAccessor
   class Base
     private
 
+    # ブラウザアクセスしてスクレイピングを行う
+    #
+    # 注意
+    # - 引数のブロック内で冪等性を担保する、つまり何度行なっても同じ結果になる、2度同じプロセスを踏んだときに1度目の値があるからと言って悪さをするような実装にしてはいけない
+    #   - 理由：retry時にretry前の値が残っていると結果がおかしくなるため。
+    #   - 対策
+    #     - ブロック外の値を使わない
+    #     - ブロック外の値を使うとしても、ブロック内で"="で丸々置き換えて、そのブロックで独立した値を使えるようにする
+    #       - ブロック内の値をメソッドの返り値として返却するためにブロック外で変数定義する場合
     def access(pre_access_params: {}, post_access_params: {}, &process)
+      max_retry_count = 5
+      retry_count = 0
       begin
         @accessor = gen_accessor
         pre_access(@accessor, pre_access_params)
         yield(@accessor)
         post_access(@accessor, post_access_params)
       rescue => e
-        screenshot_path = Rails.root.join("tmp", "error_crawl_#{Time.now.strftime("%Y%m%d%H%M%S")}.png")
-        @accessor.save_screenshot(screenshot_path)
-        Rails.logger.error("スクレイピングエラー発生。#{screenshot_path}にスクリーンショットを保存しました。")
-        raise e
+        if retry_count < max_retry_count
+          Rails.logger.warn(e)
+          retry_count += 1
+          Rails.logger.warn("リトライ #{retry_count}/#{max_retry_count}")
+          sleep 120
+          retry
+        else
+          screenshot_path = Rails.root.join("tmp", "error_crawl_#{Time.now.strftime("%Y%m%d%H%M%S")}.png")
+          @accessor.save_screenshot(screenshot_path)
+          Rails.logger.error("スクレイピングエラー発生。#{screenshot_path}にスクリーンショットを保存しました。")
+          raise e
+        end
       ensure
         @accessor.quit if need_close?
       end
