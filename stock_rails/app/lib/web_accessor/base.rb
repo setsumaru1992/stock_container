@@ -21,6 +21,8 @@ module WebAccessor
         post_access(@accessor, post_access_params)
       rescue => e
         if retry_count < max_retry_count
+          @accessor.quit if need_close?
+          
           Rails.logger.warn(e)
           retry_count += 1
           Rails.logger.warn("リトライ #{retry_count}/#{max_retry_count}")
