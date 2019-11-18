@@ -56,6 +56,7 @@ module WebAccessor
     end
 
     def need_close?
+      return false if @accessor.nil?:
       read_env_bool_value("REQUIRE_CLOSE_BROWSER")
     end
 
