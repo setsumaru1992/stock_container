@@ -15,14 +15,12 @@ module WebAccessor
       max_retry_count = 5
       retry_count = 0
       begin
-        @accessor = gen_accessor
+        @accessor ||= gen_accessor
         pre_access(@accessor, pre_access_params)
         yield(@accessor)
         post_access(@accessor, post_access_params)
       rescue => e
         if retry_count < max_retry_count
-          @accessor.quit if need_close?
-          
           Rails.logger.warn(e)
           retry_count += 1
           Rails.logger.warn("リトライ #{retry_count}/#{max_retry_count}")
@@ -30,7 +28,7 @@ module WebAccessor
           retry
         else
           screenshot_path = Rails.root.join("tmp", "error_crawl_#{Time.now.strftime("%Y%m%d%H%M%S")}.png")
-          @accessor.save_screenshot(screenshot_path)
+          @accessor.save_screenshot(screenshot_path) if @accessor.present?
           Rails.logger.error("スクレイピングエラー発生。#{screenshot_path}にスクリーンショットを保存しました。")
           raise e
         end
