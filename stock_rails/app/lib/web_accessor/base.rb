@@ -42,6 +42,8 @@ module WebAccessor
       if headless?
         options.headless!
         options.add_argument("--no-sandbox")
+        # #2017 メモリ不足対策として小さなウィンドウを指定
+        options.add_argument('window-size=1440,990')
       end
       client = Selenium::WebDriver::Remote::Http::Default.new
       client.open_timeout = 300
