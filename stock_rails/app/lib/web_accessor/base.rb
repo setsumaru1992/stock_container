@@ -15,7 +15,7 @@ module WebAccessor
       max_retry_count = 5
       retry_count = 0
       begin
-        @accessor = gen_accessor
+        @accessor ||= gen_accessor
         pre_access(@accessor, pre_access_params)
         yield(@accessor)
         post_access(@accessor, post_access_params)
@@ -28,7 +28,7 @@ module WebAccessor
           retry
         else
           screenshot_path = Rails.root.join("tmp", "error_crawl_#{Time.now.strftime("%Y%m%d%H%M%S")}.png")
-          @accessor.save_screenshot(screenshot_path)
+          @accessor.save_screenshot(screenshot_path) if @accessor.present?
           Rails.logger.error("スクレイピングエラー発生。#{screenshot_path}にスクリーンショットを保存しました。")
           raise e
         end
@@ -56,6 +56,7 @@ module WebAccessor
     end
 
     def need_close?
+      return false if @accessor.nil?
       read_env_bool_value("REQUIRE_CLOSE_BROWSER")
     end
 
