@@ -1,6 +1,6 @@
 module StockDomain::Query
   class << self
-    def base_stock_info(conditions, not_condition, order, current_price_day, latest_first_year, chart_day, range_type, page)
+    def base_stock_info(conditions, not_condition, condition_or_strs, order, current_price_day, latest_first_year, chart_day, range_type, page)
       stock_paginator = Stock
         .joins("LEFT OUTER JOIN stock_conditions ON stocks.id = stock_conditions.stock_id")
         .joins("LEFT OUTER JOIN stock_financial_conditions ON stocks.id = stock_financial_conditions.stock_id")
@@ -11,6 +11,7 @@ module StockDomain::Query
         .joins("LEFT OUTER JOIN stock_charts ON stocks.id = stock_charts.stock_id AND stock_charts.day = '#{chart_day}' AND stock_charts.range_type = #{range_type}")
         .joins("LEFT OUTER JOIN stock_favorites ON stocks.id = stock_favorites.stock_id")
         .where(conditions)
+        .where(condition_or_strs.join(" OR "))
         .where.not(not_condition)
         .order(order)
         .page(page)

@@ -15,7 +15,7 @@
 </script>
 
 <%= form_for(form_url, method: "get") do |f| %>
-  並び順<input type="text" name="order" id="order" value="<%= order %>"><br>
+  検索 <input type="text" name="search_word" id="search_word" value="<%= search_word %>"><br />
   カテゴリー<select name="category" id="category" onchange="click_search()">
   <option value="">--</option>
   <% categories.each do |category| %>
@@ -29,6 +29,7 @@
     </option>
   <% end %>
 </select><br>
+  並び順<input type="text" name="order" id="order" value="<%= order %>"><br>
   <label>
     <input type="checkbox" name="only_nikkei225" value="on"
                 <% if only_nikkei225 == "on" %>checked<% end %>
