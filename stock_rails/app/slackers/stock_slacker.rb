@@ -2,6 +2,12 @@ class StockSlacker < ApplicationSlacker
   NO_VALUE = "--".freeze
 
   class << self
+    def build_stock_slack_values(stock_price_values)
+      stock_price_values.map do |stock_price_value|
+        build_stock_slack_value(stock_price_value)
+      end.compact
+    end
+
     def build_stock_slack_value(stock_price_value)
       code = stock_price_value.code
       # ActiveRecordの直呼びはCQRSの観点から許容
@@ -11,6 +17,12 @@ class StockSlacker < ApplicationSlacker
       value.stock_condition = value.stock.stock_conditions.first
       value.stock_financial_condition = value.stock.stock_financial_conditions.first
       value
+    rescue => e
+      code = stock_price_values.code
+      ErrorSlacker.new.notice_error(e)
+      notice("(エラー発生)証券番号:#{code}の情報取得失敗")
+      Rails.logger.warn(e)
+      nil
     end
   end
 
@@ -27,7 +39,7 @@ class StockSlacker < ApplicationSlacker
     end
   end
 
-  def notice_bought_and_favorite_stocks_with_chart(favorite_stock_values, bought_stock_values)
+  def notice_bought_stocks_with_chart(bought_stock_values)
     notice("---- 保有株 ----")
     bought_stock_values.each do |value|
       begin
@@ -38,11 +50,13 @@ class StockSlacker < ApplicationSlacker
         Rails.logger.warn(e)
       end
     end
+  end
 
+  def notice_favorite_stocks_with_chart(favorite_stock_values)
     notice("---- ポートフォリオ ----")
     favorite_stock_values
-      .sort_by {|favorite_stock_value| favorite_stock_value.stock_price_value.price}.reverse
-      .each do |value|
+        .sort_by {|favorite_stock_value| favorite_stock_value.stock_price_value.price}.reverse
+        .each do |value|
       begin
         notice_with_image(favorite_stock_message(value), parse_image_path_to_image_url(value.stock_price_value.chart_path))
       rescue => e
@@ -125,15 +139,15 @@ https://moyamoya.space/dailyutil/stockInfo/access2sbi_chart?stock_code=#{stock_v
     settlement_month = stock_value.try(:stock).try(:settlement_month)
     return "" if settlement_month.nil?
     first_settlement_month = if settlement_month % 3 != 0
-      settlement_month
-    else
-      3
-    end
+                               settlement_month
+                             else
+                               3
+                             end
     settlement_months = [
-      first_settlement_month,
-      first_settlement_month + 3,
-      first_settlement_month + 6,
-      first_settlement_month + 9
+        first_settlement_month,
+        first_settlement_month + 3,
+        first_settlement_month + 6,
+        first_settlement_month + 9
     ]
     "決算：#{settlement_month}月(#{settlement_months.join(", ")}月)\n"
   end

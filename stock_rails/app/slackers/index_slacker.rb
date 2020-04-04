@@ -2,10 +2,22 @@ class IndexSlacker < ApplicationSlacker
   NO_VALUE = "--".freeze
 
   class << self
+    def build_index_slack_values(index_price_value)
+      index_price_value.map do |index_price|
+        build_index_slack_value(index_price)
+      end.compact
+    end
+
     def build_index_slack_value(index_price_value)
       value = IndexSlackValue.new(index_price_value.code)
       value.index_price_value = index_price_value
       value
+    rescue => e
+      code = index_price_value.code
+      ErrorSlacker.new.notice_error(e)
+      notice("(エラー発生)インデックス:#{code}の情報取得失敗")
+      Rails.logger.warn(e)
+      nil
     end
   end
 
