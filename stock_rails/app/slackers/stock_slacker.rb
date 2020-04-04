@@ -18,9 +18,9 @@ class StockSlacker < ApplicationSlacker
       value.stock_financial_condition = value.stock.stock_financial_conditions.first
       value
     rescue => e
-      code = stock_price_values.code
+      code = stock_price_value.code
       ErrorSlacker.new.notice_error(e)
-      notice("(エラー発生)証券番号:#{code}の情報取得失敗")
+      new.notice("(エラー発生)証券番号:#{code}の情報取得失敗")
       Rails.logger.warn(e)
       nil
     end
