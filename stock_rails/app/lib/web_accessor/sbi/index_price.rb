@@ -25,10 +25,10 @@ module WebAccessor
 
       def get_concated_price_chart_image_path_of(index_code)
         range_keys = [
-          ::StockChart::ONE_YEAR,
+          ::StockChart::ONE_DAY,
           ::StockChart::TWO_MONTH,
+          ::StockChart::ONE_YEAR,
           ::StockChart::FIVE_YEAR,
-          ::StockChart::TEN_YEAR
         ]
         get_concated_price_chart_image_path(index_code, range_keys, "/var/opt/stock_container/chart_images/indexes")
       end
