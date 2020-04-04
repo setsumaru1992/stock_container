@@ -2,7 +2,8 @@ module WebAccessor::Sbi
   class Base < ::WebAccessor::Base
     LOGIN_URL = "https://site2.sbisec.co.jp/ETGate/?_ControlID=WPLETlgR001Control&_PageID=WPLETlgR001Rlgn50&_DataStoreID=DSWPLETlgR001Control&_ActionID=login&getFlg=on"
 
-    def initialize(need_credential: false, user_name: nil, password: nil)
+    def initialize(need_credential: false, user_name: nil, password: nil, close_each_access: true)
+      super(close_each_access: close_each_access)
       @need_credential = need_credential
       if need_credential
         raise "Initialize needs credential information." if user_name.nil? || password.nil?
