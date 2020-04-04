@@ -13,9 +13,17 @@ class StockSlacker < ApplicationSlacker
       # ActiveRecordの直呼びはCQRSの観点から許容
       value = StockSlackValue.new
       value.stock_price_value = stock_price_value
-      value.stock = ::Stock.find_by(code: code)
-      value.stock_condition = value.stock.stock_conditions.first
-      value.stock_financial_condition = value.stock.stock_financial_conditions.first
+
+      stock = ::Stock.find_by(code: code)
+      value.stock = stock
+
+      value.stock_condition = stock.stock_conditions.first
+      value.stock_financial_condition = stock.stock_financial_conditions.first
+
+      latest_paformances = stock.stock_performances.order("year DESC")&.take(2)
+      value.stock_latest_performance = latest_paformances.first if latest_paformances.present? && latest_paformances.size >= 1
+      value.stock_previous_performance = latest_paformances.second if latest_paformances.present? && latest_paformances.size >= 2
+
       value
     rescue => e
       code = stock_price_value.code
@@ -76,32 +84,58 @@ class StockSlacker < ApplicationSlacker
   def bought_stock_message(stock_value)
     price = stock_value.stock_price_value.price
     ref_price = stock_value.stock_price_value.reference_price
-    <<-EOS
-【#{stock_value.stock.code} #{stock_value.stock.name}】#{stock_is_nikkei_average_group(stock_value)}
+
+    message = ""
+    message << stock_heading(stock_value) + "\n"
+
+    message << <<-EOS
 (現在)#{price} (取得)#{ref_price}
 (利益)#{profit(ref_price, price)}(#{profit_rate(ref_price, price)}%)
+    EOS
+
+    message << <<-EOS
 5%↑    #{by_percent_of(0.05, price)}  5%↓    #{by_percent_of(-0.05, price)}
 10%↑  #{by_percent_of(0.1, price)}  10%↓  #{by_percent_of(-0.1, price)}
 20%↑  #{by_percent_of(0.2, price)}  20%↓  #{by_percent_of(-0.2, price)}
-https://moyamoya.space/dailyutil/stockInfo/access2sbi_chart?stock_code=#{stock_value.stock.code}
-#{stock_detail_message(stock_value)}
     EOS
+
+    message << stock_url(stock_value.stock.code) + "\n\n"
+    message << stock_detail_message(stock_value) + "\n"
+    message
   end
 
   def favorite_stock_message(stock_value)
     price = stock_value.stock_price_value.price
     ref_price = stock_value.stock_price_value.reference_price
-    <<-EOS
-【#{stock_value.stock.code} #{stock_value.stock.name}】#{stock_is_nikkei_average_group(stock_value)}
+
+    message = ""
+    message << stock_heading(stock_value) + "\n"
+
+    message << <<-EOS
 (現在)#{price}
 (前日比)#{stock_value.stock_price_value.diff_price_from_previous_day}(#{stock_value.stock_price_value.rate_str_comparing_privious_day_price})
 (参考価格)#{ref_price}(利益: #{profit(ref_price, price)}(#{profit_rate(ref_price, price)}%))
+    EOS
+
+    message << <<-EOS
 5%↑    #{by_percent_of(0.05, price)}
 10%↑  #{by_percent_of(0.1, price)}
 20%↑  #{by_percent_of(0.2, price)}
-https://moyamoya.space/dailyutil/stockInfo/access2sbi_chart?stock_code=#{stock_value.stock.code}
-#{stock_detail_message(stock_value)}
     EOS
+
+    message << stock_url(stock_value.stock.code) + "\n\n"
+    message << stock_detail_message(stock_value) + "\n"
+    message
+  end
+
+  def stock_heading(stock_value)
+    "【#{stock_value.stock.code} #{stock_value.stock.name}】#{stock_is_nikkei_average_group(stock_value)}"
+  end
+
+
+
+  def stock_url(stock_code)
+    "https://moyamoya.space/dailyutil/stockInfo/access2sbi_chart?stock_code=#{stock_code}"
   end
 
   def profit(before, after)
@@ -120,13 +154,17 @@ https://moyamoya.space/dailyutil/stockInfo/access2sbi_chart?stock_code=#{stock_v
   end
 
   def stock_detail_message(stock_value)
-    stock_feature(stock_value) + stock_settlement_months(stock_value) + "\n"
+    message = ""
+    message << stock_feature(stock_value)
+    message << stock_settlement_months(stock_value)
+    message << stock_financial_message(stock_value)
+    message
   end
 
   def stock_feature(stock_value)
     feature = stock_value.try(:stock_condition).try(:feature)
     return "" if feature.nil?
-    "特徴：#{feature}\n"
+    "特徴：#{feature}\n\n"
   end
 
   def stock_is_nikkei_average_group(stock_value)
@@ -150,6 +188,47 @@ https://moyamoya.space/dailyutil/stockInfo/access2sbi_chart?stock_code=#{stock_v
         first_settlement_month + 6,
         first_settlement_month + 9
     ]
-    "決算：#{settlement_month}月(#{settlement_months.join(", ")}月)\n"
+    "決算：#{settlement_month}月(#{settlement_months.join(", ")}月)\n\n"
+  end
+
+  def stock_financial_message(stock_value)
+    message = ""
+    market_capitalization_str = "#{stock_value.stock_financial_condition.market_capitalization.to_s(:delimited)}百万円"
+
+    message << "時価総額: #{market_capitalization_str}\n"
+    pbr = (stock_value.stock_financial_condition.market_capitalization.fdiv(stock_value.stock_financial_condition.shareholder_equity)).round(1)
+    message << "PBR(時価総額/純資産): #{pbr} \n"
+
+    per = if stock_value.stock_latest_performance.present?
+            stock_value.stock_financial_condition.market_capitalization.fdiv(stock_value.stock_latest_performance.net_income).round(1)
+          else
+            "-"
+          end
+    message << "PER(時価総額/そのQの予測純利益): #{per} \n"
+    message << "※PBR,PERともに低いなら割安 \n\n"
+
+    message << perfomance_message(stock_value.stock_latest_performance, stock_value.stock_previous_performance)
+
+    message
+  end
+
+  def perfomance_message(performance, previous_performance)
+    return "" if performance.blank?
+
+    message = ""
+    message << "#{performance.year}年業績(単位:百万円)\n"
+    message << "(売上高)#{performance.net_sales.to_s(:delimited)} "
+    message << "(#{profit_rate(previous_performance.net_sales, performance.net_sales)}%)" if previous_performance.present?
+    message << "\n"
+    message << "(営業利益)#{performance.operating_income.to_s(:delimited)} "
+    message << "(#{profit_rate(previous_performance.operating_income, performance.operating_income)}%)" if previous_performance.present?
+    message << "\n"
+    message << "(経常利益)#{performance.ordinary_income.to_s(:delimited)} "
+    message << "(#{profit_rate(previous_performance.ordinary_income, performance.ordinary_income)}%)" if previous_performance.present?
+    message << "\n"
+    message << "(純利益)#{performance.net_income.to_s(:delimited)}"
+    message << "(#{profit_rate(previous_performance.net_income, performance.net_income)}%)" if previous_performance.present?
+    message << "\n"
+    message
   end
 end
