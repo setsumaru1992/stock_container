@@ -42,6 +42,12 @@ module WebAccessor::Sbi
           stock_price.price = get_content(target_element: portfolio_row, selector: "./td[6]") do |content|
             content.gsub(",", "").to_i
           end
+          stock_price.diff_price_from_previous_day = get_content(target_element: portfolio_row, selector: "./td[7]") do |content|
+            content.to_f
+          end
+          stock_price.rate_str_comparing_privious_day_price = get_content(target_element: portfolio_row, selector: "./td[8]") do |content|
+            "#{content}%"
+          end
           stock_price
         end.compact
       end

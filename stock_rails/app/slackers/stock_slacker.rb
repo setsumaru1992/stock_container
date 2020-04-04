@@ -93,8 +93,9 @@ https://moyamoya.space/dailyutil/stockInfo/access2sbi_chart?stock_code=#{stock_v
     ref_price = stock_value.stock_price_value.reference_price
     <<-EOS
 【#{stock_value.stock.code} #{stock_value.stock.name}】#{stock_is_nikkei_average_group(stock_value)}
-(現在)#{price} (参考価格)#{ref_price}
-(差分)#{profit(ref_price, price)}(#{profit_rate(ref_price, price)}%)
+(現在)#{price}
+(前日比)#{stock_value.stock_price_value.diff_price_from_previous_day}(#{stock_value.stock_price_value.rate_str_comparing_privious_day_price})
+(参考価格)#{ref_price}(利益: #{profit(ref_price, price)}(#{profit_rate(ref_price, price)}%))
 5%↑    #{by_percent_of(0.05, price)}
 10%↑  #{by_percent_of(0.1, price)}
 20%↑  #{by_percent_of(0.2, price)}

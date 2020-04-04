@@ -5,7 +5,7 @@ module WebAccessor
     end
 
     def close
-      @accessor.quit
+      @accessor.quit if @accessor.present?
     end
 
     private

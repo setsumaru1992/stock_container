@@ -5,6 +5,8 @@ module WebAccessor::Sbi
     attr_accessor :code,
                   :price,
                   :reference_price,
-                  :chart_path
+                  :chart_path,
+                  :diff_price_from_previous_day,
+                  :rate_str_comparing_privious_day_price
   end
 end
