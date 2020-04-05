@@ -35,7 +35,11 @@ class PriceNoticeSlacker < ApplicationSlacker
 
   def profit_rate(before, after)
     return NO_VALUE unless before.is_a?(Numeric) && after.is_a?(Numeric)
-    ((after - before).fdiv(before) * 100).round(1)
+    calced_rate = ((after - before).fdiv(before) * 100).round(1)
+    
+    absolute_rate = calced_rate > 0 ? calced_rate : calced_rate * -1
+    positive = (after - before) > 0
+    positive ? absolute_rate : absolute_rate * -1
   end
 
   def by_percent_of(percent, target, digit: 0)
