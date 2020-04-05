@@ -5,7 +5,7 @@ module WebAccessor
         index_price_value = IndexPriceValue.new
         index_price_value.code = index_code
 
-        access do |accessor|
+        access do |_|
           visit(index_price_page_url_of(index_code))
 
           no_value = "--"

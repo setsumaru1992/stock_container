@@ -28,6 +28,7 @@ Rails.application.routes.draw do
       get "notice_bought_stock_prices"
       get "notice_bought_and_favorite_stocks_with_chart"
       get "notice_index_prices"
+      get "notice_important_prices"
     end
   end
 end

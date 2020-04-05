@@ -2,8 +2,8 @@ class IndexSlacker < ApplicationSlacker
   NO_VALUE = "--".freeze
 
   class << self
-    def build_index_slack_values(index_price_value)
-      index_price_value.map do |index_price|
+    def build_index_slack_values(index_price_values)
+      index_price_values.map do |index_price|
         build_index_slack_value(index_price)
       end.compact
     end

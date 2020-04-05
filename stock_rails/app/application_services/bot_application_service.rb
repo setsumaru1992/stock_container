@@ -30,5 +30,11 @@ class BotApplicationService
       index_slack_values = ::IndexSlacker.build_index_slack_values(index_prices)
       IndexSlacker.new.notice_index_with_chart(index_slack_values)
     end
+
+    def notice_fx_prices
+      fx_prices = ::FxDomain::Entity.get_fx_prices(need_chart: true)
+      fx_slack_values = ::FxSlacker.build_fx_slack_values(fx_prices)
+      FxSlacker.new.notice_fx_with_chart(fx_slack_values)
+    end
   end
 end
