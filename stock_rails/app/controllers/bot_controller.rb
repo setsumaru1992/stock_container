@@ -37,8 +37,9 @@ class BotController < ApplicationController
 
   def notice_important_prices
     response = default_responce
-    # BotApplicationService.notice_index_prices
+    BotApplicationService.notice_index_prices
     BotApplicationService.notice_fx_prices
+    BotApplicationService.notice_metal_prices
     render json: response
   end
 

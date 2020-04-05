@@ -1,4 +1,4 @@
-class FxSlacker < ApplicationSlacker
+class FxSlacker < PriceNoticeSlacker
   NO_VALUE = "--".freeze
 
   class << self
@@ -39,25 +39,30 @@ class FxSlacker < ApplicationSlacker
   end
 
   def fx_message(value)
-    price = value.fx_price_value.price
-    ref_price = value.fx_price_value.reference_price
+    v = value.fx_price_value
     <<-EOS
 【円→USD】
-(現在)#{price} (前日)#{ref_price}
-(差分)#{profit(ref_price, price)}(#{profit_rate(ref_price, price)}%)
+#{current_price_message(v.price, previous_price: v.reference_price)}
+
+#{increased_and_decreaced_price_message(v.price, leverage: 10)}
 TODO: 表示はしているがDBに値登録していないため修正
 #{fx_price_page_url}
     EOS
   end
 
-  def profit(before, after)
-    return NO_VALUE unless before.is_a?(Numeric) && after.is_a?(Numeric)
-    after - before
-  end
-
-  def profit_rate(before, after)
-    return NO_VALUE unless before.is_a?(Numeric) && after.is_a?(Numeric)
-    ((after - before).fdiv(before) * 100).round(1)
+  def increased_and_decreaced_price_message(cur_price, leverage: nil)
+    message = ""
+    leverage_rate_for_calc = 1
+    if leverage.present?
+      message << "(レバレッジ#{leverage}倍時の増減)\n"
+      leverage_rate_for_calc = 1.fdiv(leverage)
+    end
+    message << <<-EOS
+5%↑    #{by_percent_of(0.05 * leverage_rate_for_calc, cur_price, digit: 2).to_s(:delimited)}  5%↓    #{by_percent_of(-0.05 * leverage_rate_for_calc, cur_price, digit: 2).to_s(:delimited)}
+10%↑  #{by_percent_of(0.1 * leverage_rate_for_calc, cur_price, digit: 2).to_s(:delimited)}  10%↓  #{by_percent_of(-0.1 * leverage_rate_for_calc, cur_price, digit: 2).to_s(:delimited)}
+20%↑  #{by_percent_of(0.2 * leverage_rate_for_calc, cur_price, digit: 2).to_s(:delimited)}  20%↓  #{by_percent_of(-0.2 * leverage_rate_for_calc, cur_price, digit: 2).to_s(:delimited)}
+    EOS
+    message
   end
 
   def fx_price_page_url

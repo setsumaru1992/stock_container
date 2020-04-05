@@ -62,11 +62,6 @@ module WebAccessor::Sbi
       concate_images(image_paths, unique_path("#{image_dir}/#{image_name}.#{image_extension}"))
     end
 
-    def switch_to_iframe(iframe_xpath)
-      iframe = @accessor.find_element(:xpath, iframe_xpath)
-      @accessor.switch_to.frame(iframe)
-    end
-
     def get_price_chart_image_path_in_iframe(range_key, image_dir, image_name, image_extension)
       tab_idx = ChartRange::RANGE_XPATH_IDX_HASH[range_key]
       click_js_trigger(

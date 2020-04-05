@@ -1,4 +1,4 @@
-class StockSlacker < ApplicationSlacker
+class StockSlacker < PriceNoticeSlacker
   NO_VALUE = "--".freeze
 
   class << self
@@ -88,16 +88,8 @@ class StockSlacker < ApplicationSlacker
     message = ""
     message << stock_heading(stock_value) + "\n"
 
-    message << <<-EOS
-(現在)#{price} (取得)#{ref_price}
-(利益)#{profit(ref_price, price)}(#{profit_rate(ref_price, price)}%)
-    EOS
-
-    message << <<-EOS
-5%↑    #{by_percent_of(0.05, price)}  5%↓    #{by_percent_of(-0.05, price)}
-10%↑  #{by_percent_of(0.1, price)}  10%↓  #{by_percent_of(-0.1, price)}
-20%↑  #{by_percent_of(0.2, price)}  20%↓  #{by_percent_of(-0.2, price)}
-    EOS
+    message << current_price_message(price, previous_price: ref_price) + "\n"
+    message << increased_and_decreaced_price_message(price) + "\n"
 
     message << stock_url(stock_value.stock.code) + "\n\n"
     message << stock_detail_message(stock_value) + "\n"
@@ -112,16 +104,12 @@ class StockSlacker < ApplicationSlacker
     message << stock_heading(stock_value) + "\n"
 
     message << <<-EOS
-(現在)#{price}
-(前日比)#{stock_value.stock_price_value.diff_price_from_previous_day}(#{stock_value.stock_price_value.rate_str_comparing_privious_day_price})
-(参考価格)#{ref_price}(利益: #{profit(ref_price, price)}(#{profit_rate(ref_price, price)}%))
+現在値: #{price.to_s(:delimited)}
+前日: #{stock_value.stock_price_value.diff_price_from_previous_day}(前日比: #{stock_value.stock_price_value.rate_str_comparing_privious_day_price})
+参考価格: #{ref_price.to_s(:delimited)}(利益: #{profit(ref_price, price)}(#{profit_rate(ref_price, price)}%))
     EOS
 
-    message << <<-EOS
-5%↑    #{by_percent_of(0.05, price)}
-10%↑  #{by_percent_of(0.1, price)}
-20%↑  #{by_percent_of(0.2, price)}
-    EOS
+    message << increaced_price_message(price) + "\n"
 
     message << stock_url(stock_value.stock.code) + "\n\n"
     message << stock_detail_message(stock_value) + "\n"

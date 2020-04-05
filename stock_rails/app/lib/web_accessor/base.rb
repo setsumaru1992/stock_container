@@ -30,7 +30,7 @@ module WebAccessor
         yield(@accessor)
         post_access(@accessor, post_access_params) if need_close?
       rescue => e
-        if retry_count < max_retry_count
+        if false && retry_count < max_retry_count
           Rails.logger.warn(e)
           retry_count += 1
           Rails.logger.warn("リトライ #{retry_count}/#{max_retry_count}")
@@ -103,6 +103,16 @@ module WebAccessor
       ::Selenium::WebDriver::Wait.new(timeout: 300).until do
         @accessor.find_element(wait_target_by, wait_target_selector).displayed?
       end
+    end
+
+    def switch_to_iframe(iframe_xpath)
+      iframe = @accessor.find_element(:xpath, iframe_xpath)
+      @accessor.switch_to.frame(iframe)
+    end
+
+    def switch_to_new_tab
+      new_tab = @accessor.window_handles.last
+      @accessor.switch_to.window(new_tab)
     end
   end
 end

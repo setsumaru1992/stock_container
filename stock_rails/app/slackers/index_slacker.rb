@@ -1,4 +1,4 @@
-class IndexSlacker < ApplicationSlacker
+class IndexSlacker < PriceNoticeSlacker
   NO_VALUE = "--".freeze
 
   class << self
@@ -40,25 +40,14 @@ class IndexSlacker < ApplicationSlacker
   end
 
   def index_message(value)
-    price = value.index_price_value.price
-    ref_price = value.index_price_value.reference_price
+    v = value.index_price_value
     <<-EOS
 【#{value.index_name}】
-(現在)#{price} (前日)#{ref_price}
-(差分)#{profit(ref_price, price)}(#{profit_rate(ref_price, price)}%)
+#{current_price_message(v.price, previous_price: v.reference_price)}
+#{increased_and_decreaced_price_message(v.price)}
 TODO: 表示はしているがDBに値登録していないため修正
 #{index_price_page_url_of(value.index_code)}
     EOS
-  end
-
-  def profit(before, after)
-    return NO_VALUE unless before.is_a?(Numeric) && after.is_a?(Numeric)
-    after - before
-  end
-
-  def profit_rate(before, after)
-    return NO_VALUE unless before.is_a?(Numeric) && after.is_a?(Numeric)
-    ((after - before).fdiv(before) * 100).round(1)
   end
 
   def index_price_page_url_of(index_code)
