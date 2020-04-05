@@ -10,6 +10,7 @@ class BotApplicationService
     rescue => e
       Rails.logger.error(e)
       ErrorSlacker.new.notice_error(e)
+      StockSlacker.new.notice("notice_bought_stock_pricesでエラー発生")
       nil
     end
 
@@ -22,6 +23,7 @@ class BotApplicationService
     rescue => e
       Rails.logger.error(e)
       ErrorSlacker.new.notice_error(e)
+      StockSlacker.new.notice("notice_bought_stocks_with_chartでエラー発生")
       nil
     end
 
@@ -34,6 +36,7 @@ class BotApplicationService
     rescue => e
       Rails.logger.error(e)
       ErrorSlacker.new.notice_error(e)
+      StockSlacker.new.notice("notice_favorite_stocks_with_chartでエラー発生")
       nil
     end
 
@@ -44,6 +47,7 @@ class BotApplicationService
     rescue => e
       Rails.logger.error(e)
       ErrorSlacker.new.notice_error(e)
+      StockSlacker.new.notice("notice_index_pricesでエラー発生")
       nil
     end
 
@@ -54,6 +58,7 @@ class BotApplicationService
     rescue => e
       Rails.logger.error(e)
       ErrorSlacker.new.notice_error(e)
+      StockSlacker.new.notice("notice_fx_pricesでエラー発生")
       nil
     end
 
@@ -64,6 +69,7 @@ class BotApplicationService
     rescue => e
       Rails.logger.error(e)
       ErrorSlacker.new.notice_error(e)
+      StockSlacker.new.notice("notice_metal_pricesでエラー発生")
       nil
     end
   end

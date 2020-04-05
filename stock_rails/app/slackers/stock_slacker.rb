@@ -106,7 +106,7 @@ class StockSlacker < PriceNoticeSlacker
     message << <<-EOS
 現在値: #{price.to_s(:delimited)}
 前日: #{stock_value.stock_price_value.diff_price_from_previous_day}(前日比: #{stock_value.stock_price_value.rate_str_comparing_privious_day_price})
-参考価格: #{ref_price.to_s(:delimited)}(利益: #{profit(ref_price, price)}(#{profit_rate(ref_price, price)}%))
+参考価格: #{ref_price}(利益: #{profit(ref_price, price)}(#{profit_rate(ref_price, price)}%))
     EOS
 
     message << increaced_price_message(price) + "\n"
