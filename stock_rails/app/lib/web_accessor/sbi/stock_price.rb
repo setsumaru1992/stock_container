@@ -42,6 +42,12 @@ module WebAccessor::Sbi
           stock_price.price = get_content(target_element: portfolio_row, selector: "./td[6]") do |content|
             content.gsub(",", "").to_i
           end
+          stock_price.diff_price_from_previous_day = get_content(target_element: portfolio_row, selector: "./td[7]") do |content|
+            content.to_f
+          end
+          stock_price.rate_str_comparing_privious_day_price = get_content(target_element: portfolio_row, selector: "./td[8]") do |content|
+            "#{content}%"
+          end
           stock_price
         end.compact
       end
@@ -133,10 +139,10 @@ module WebAccessor::Sbi
 
     def get_concated_price_chart_image_path_of(stock_code)
       range_keys = [
-        ::StockChart::ONE_YEAR,
+        ::StockChart::ONE_DAY,
         ::StockChart::TWO_MONTH,
+        ::StockChart::ONE_YEAR,
         ::StockChart::FIVE_YEAR,
-        ::StockChart::TEN_YEAR
       ]
       get_concated_price_chart_image_path(stock_code, range_keys, "/var/opt/stock_container/chart_images/stocks")
     end

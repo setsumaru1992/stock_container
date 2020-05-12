@@ -2,7 +2,8 @@ module WebAccessor::Sbi
   class Base < ::WebAccessor::Base
     LOGIN_URL = "https://site2.sbisec.co.jp/ETGate/?_ControlID=WPLETlgR001Control&_PageID=WPLETlgR001Rlgn50&_DataStoreID=DSWPLETlgR001Control&_ActionID=login&getFlg=on"
 
-    def initialize(need_credential: false, user_name: nil, password: nil)
+    def initialize(need_credential: false, user_name: nil, password: nil, close_each_access: true)
+      super(close_each_access: close_each_access)
       @need_credential = need_credential
       if need_credential
         raise "Initialize needs credential information." if user_name.nil? || password.nil?
@@ -59,11 +60,6 @@ module WebAccessor::Sbi
       end
       return image_paths.first if image_paths.size == 1
       concate_images(image_paths, unique_path("#{image_dir}/#{image_name}.#{image_extension}"))
-    end
-
-    def switch_to_iframe(iframe_xpath)
-      iframe = @accessor.find_element(:xpath, iframe_xpath)
-      @accessor.switch_to.frame(iframe)
     end
 
     def get_price_chart_image_path_in_iframe(range_key, image_dir, image_name, image_extension)

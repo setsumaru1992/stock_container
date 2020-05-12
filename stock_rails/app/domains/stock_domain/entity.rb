@@ -5,34 +5,44 @@ module StockDomain
 
     class << self
       def save_stock_informations(ignore_existing_stock_code: true)
-        stock_values = ::WebAccessor::Sbi::StockInfo.new.get_stocks
+        web_accessor = ::WebAccessor::Sbi::StockInfo.new(close_each_access: false)
+
+        stock_values = web_accessor.get_stocks
         codes = stock_values.map(&:code)
         codes = ::StockDomain::Repository.not_existing_stock_codes(codes) if ignore_existing_stock_code
         codes.each do |code|
           entity = self.new(code)
           begin
-            entity.save_stock_information
+            entity.save_stock_information(web_accessor: web_accessor)
           rescue => e
             Rails.logger.error(e)
             Rails.logger.warn("証券番号#{code}の株情報の取得に失敗しました。")
           end
         end
+        web_accessor.close
+
+        nil
       end
 
       def save_stock_prices
         day = day_of_price
         return if weekend?(day)
-        stock_prices = ::WebAccessor::Sbi::StockPrice.new.get_stock_prices
+
+        web_accessor = ::WebAccessor::Sbi::StockPrice.new(close_each_access: false)
+        stock_prices = web_accessor.get_stock_prices
 
         stock_prices.each do |stock_price|
           entity = self.new(stock_price.code)
           begin
-            entity.save_stock_price(price: stock_price.price, day: day)
+            entity.save_stock_price(web_accessor: web_accessor, price: stock_price.price, day: day)
           rescue => e
             Rails.logger.error(e)
             Rails.logger.warn("証券番号#{stock_price.code}の株価の取得に失敗しました。")
           end
         end
+        web_accessor.close
+
+        nil
       end
 
       def save_stock_mean_prices(day: Date.today)
@@ -81,10 +91,14 @@ module StockDomain
                          .new(need_credential: true, user_name: user_name, password: read_password)
                          .get_portfolio_stock_prices
         return stock_prices unless need_chart
-        stock_prices.map do |stock_price|
-          stock_price.chart_path = ::WebAccessor::Sbi::StockPrice.new.get_concated_price_chart_image_path_of(stock_price.code)
+
+        web_accessor = ::WebAccessor::Sbi::StockPrice.new(close_each_access: false)
+        result_stock_prices = stock_prices.map do |stock_price|
+          stock_price.chart_path = web_accessor.get_concated_price_chart_image_path_of(stock_price.code)
           stock_price
         end
+        web_accessor.close
+        result_stock_prices
       end
 
       def get_bought_stock_prices(user_id, need_chart: false)
@@ -94,10 +108,14 @@ module StockDomain
                          .new(need_credential: true, user_name: user_name, password: read_password)
                          .get_bought_stock_prices
         return stock_prices unless need_chart
-        stock_prices.map do |stock_price|
-          stock_price.chart_path = ::WebAccessor::Sbi::StockPrice.new.get_concated_price_chart_image_path_of(stock_price.code)
+
+        web_accessor = ::WebAccessor::Sbi::StockPrice.new(close_each_access: false)
+        result_stock_prices = stock_prices.map do |stock_price|
+          stock_price.chart_path = web_accessor.get_concated_price_chart_image_path_of(stock_price.code)
           stock_price
         end
+        web_accessor.close
+        result_stock_prices
       end
 
       # private
@@ -129,8 +147,8 @@ module StockDomain
       @code = code
     end
 
-    def save_stock_information
-      web_accessor = ::WebAccessor::Sbi::StockInfo.new
+    def save_stock_information(web_accessor: nil)
+      web_accessor ||= ::WebAccessor::Sbi::StockInfo.new
       web_value = ::WebAccessor::Sbi::StockInfoValue.new
       base_company_info = web_accessor.get_company_base_info_of(@code)
       return if base_company_info.nil?
@@ -145,10 +163,12 @@ module StockDomain
       end
     end
 
-    def save_stock_price(price: nil, day: nil)
+    def save_stock_price(web_accessor: nil, price: nil, day: nil)
       day ||= ::StockDomain::Entity.day_of_price
       return if ::StockDomain::Entity.weekend?(day)
-      price ||= ::WebAccessor::Sbi::StockPrice.new.get_price_of(@code)
+
+      web_accessor ||= ::WebAccessor::Sbi::StockPrice.new
+      price ||= web_accessor.get_price_of(@code)
       Repository.create_stock_price(code: @code, day: day, price: price)
     end
 

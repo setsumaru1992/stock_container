@@ -1,5 +1,13 @@
 module WebAccessor
   class Base
+    def initialize(close_each_access: true)
+      @close_each_access = close_each_access
+    end
+
+    def close
+      @accessor.quit if @accessor.present?
+    end
+
     private
 
     # ブラウザアクセスしてスクレイピングを行う
@@ -15,12 +23,14 @@ module WebAccessor
       max_retry_count = 5
       retry_count = 0
       begin
-        @accessor ||= gen_accessor
-        pre_access(@accessor, pre_access_params)
+        if @accessor.nil?
+          @accessor = gen_accessor
+          pre_access(@accessor, pre_access_params)
+        end
         yield(@accessor)
-        post_access(@accessor, post_access_params)
+        post_access(@accessor, post_access_params) if need_close?
       rescue => e
-        if retry_count < max_retry_count
+        if false && retry_count < max_retry_count
           Rails.logger.warn(e)
           retry_count += 1
           Rails.logger.warn("リトライ #{retry_count}/#{max_retry_count}")
@@ -33,7 +43,7 @@ module WebAccessor
           raise e
         end
       ensure
-        @accessor.quit if need_close?
+        @accessor.quit if need_close? && @close_each_access
       end
     end
 
@@ -93,6 +103,16 @@ module WebAccessor
       ::Selenium::WebDriver::Wait.new(timeout: 300).until do
         @accessor.find_element(wait_target_by, wait_target_selector).displayed?
       end
+    end
+
+    def switch_to_iframe(iframe_xpath)
+      iframe = @accessor.find_element(:xpath, iframe_xpath)
+      @accessor.switch_to.frame(iframe)
+    end
+
+    def switch_to_new_tab
+      new_tab = @accessor.window_handles.last
+      @accessor.switch_to.window(new_tab)
     end
   end
 end
