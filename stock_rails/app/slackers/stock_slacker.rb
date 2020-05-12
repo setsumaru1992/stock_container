@@ -9,14 +9,20 @@ class StockSlacker < ApplicationSlacker
     end
 
     def build_stock_slack_value(stock_price_value)
-      code = stock_price_value.code
-      # ActiveRecordの直呼びはCQRSの観点から許容
       value = StockSlackValue.new
+      code = stock_price_value.code
+      value.stock_code = code
       value.stock_price_value = stock_price_value
-      value.stock = ::Stock.find_by(code: code)
-      value.stock_condition = value.stock.stock_conditions.first
-      value.stock_financial_condition = value.stock.stock_financial_conditions.first
-      value
+      # ActiveRecordの直呼びはCQRSの観点から許容
+      stock = ::Stock.find_by(code: code)
+      if stock.present?
+        value.stock = stock
+        value.stock_condition = value.stock.stock_conditions.first
+        value.stock_financial_condition = value.stock.stock_financial_conditions.first
+        value
+      else
+        value
+      end
     rescue => e
       code = stock_price_values.code
       ErrorSlacker.new.notice_error(e)
@@ -58,7 +64,11 @@ class StockSlacker < ApplicationSlacker
         .sort_by {|favorite_stock_value| favorite_stock_value.stock_price_value.price}.reverse
         .each do |value|
       begin
-        notice_with_image(favorite_stock_message(value), parse_image_path_to_image_url(value.stock_price_value.chart_path))
+        if value.stock.present?
+          notice_with_image(favorite_stock_message(value), parse_image_path_to_image_url(value.stock_price_value.chart_path))
+        else
+          notice_with_image(favorite_stock_message_without_stock_information(value), parse_image_path_to_image_url(value.stock_price_value.chart_path))
+        end
       rescue => e
         ErrorSlacker.new.notice_error(e)
         notice("エラー発生")
@@ -83,7 +93,7 @@ class StockSlacker < ApplicationSlacker
 5%↑    #{by_percent_of(0.05, price)}  5%↓    #{by_percent_of(-0.05, price)}
 10%↑  #{by_percent_of(0.1, price)}  10%↓  #{by_percent_of(-0.1, price)}
 20%↑  #{by_percent_of(0.2, price)}  20%↓  #{by_percent_of(-0.2, price)}
-https://moyamoya.space/dailyutil/stockInfo/access2sbi_chart?stock_code=#{stock_value.stock.code}
+https://moyamoya.space/dailyutil/stockInfo/access2sbi_chart?stock_code=#{stock_value.stock_code}
 #{stock_detail_message(stock_value)}
     EOS
   end
@@ -103,6 +113,20 @@ https://moyamoya.space/dailyutil/stockInfo/access2sbi_chart?stock_code=#{stock_v
     EOS
   end
 
+  def favorite_stock_message_without_stock_information(stock_value)
+    price = stock_value.stock_price_value.price
+    ref_price = stock_value.stock_price_value.reference_price
+    <<-EOS
+【#{stock_value.stock_code}】
+(現在)#{price} (参考価格)#{ref_price}
+(差分)#{profit(ref_price, price)}(#{profit_rate(ref_price, price)}%)
+5%↑    #{by_percent_of(0.05, price)}
+10%↑  #{by_percent_of(0.1, price)}
+20%↑  #{by_percent_of(0.2, price)}
+https://moyamoya.space/dailyutil/stockInfo/access2sbi_chart?stock_code=#{stock_value.stock_code}
+    EOS
+  end
+
   def profit(before, after)
     return NO_VALUE unless before.is_a?(Numeric) && after.is_a?(Numeric)
     after - before
@@ -119,6 +143,7 @@ https://moyamoya.space/dailyutil/stockInfo/access2sbi_chart?stock_code=#{stock_v
   end
 
   def stock_detail_message(stock_value)
+    return "" unless stock_value.stock.present?
     stock_feature(stock_value) + stock_settlement_months(stock_value) + "\n"
   end
 
