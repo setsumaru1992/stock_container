@@ -91,17 +91,24 @@ class StockSlacker < PriceNoticeSlacker
 
   def bought_stock_message(stock_value)
     price = stock_value.stock_price_value.price
-    ref_price = stock_value.stock_price_value.reference_price
+    bought_price = stock_value.stock_price_value.reference_price
 
     message = ""
     message << stock_heading(stock_value) + "\n"
 
-    message << current_price_message(price, previous_price: ref_price) + "\n"
-    message << increased_and_decreaced_price_message(price) + "\n"
+    message << current_price_message(price, bought_price) + "\n"
+    message << increased_and_decreaced_price_message(bought_price) + "\n"
 
     message << stock_url(stock_value.stock_code) + "\n\n"
     message << stock_detail_message(stock_value) + "\n"
 
+    message
+  end
+
+  def current_bought_price_message(cur_price, bought_price)
+    message = ""
+    message << "現在値: #{cur_price.to_s(:delimited)}"
+    message << "(取得値: #{bought_price.to_s(:delimited)} #{profit_rate(bought_price, cur_price)}%)"
     message
   end
 
