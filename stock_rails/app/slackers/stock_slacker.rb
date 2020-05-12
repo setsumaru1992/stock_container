@@ -96,7 +96,7 @@ class StockSlacker < PriceNoticeSlacker
     message = ""
     message << stock_heading(stock_value) + "\n"
 
-    message << current_price_message(price, bought_price) + "\n"
+    message << current_bought_price_message(price, bought_price) + "\n"
     message << increased_and_decreaced_price_message(bought_price) + "\n"
 
     message << stock_url(stock_value.stock_code) + "\n\n"
