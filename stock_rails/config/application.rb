@@ -3,7 +3,6 @@ require_relative 'boot'
 require 'rails/all'
 require 'dotenv'
 
-
 # Require the gems listed in Gemfile, including any gems
 # you've limited to :test, :development, or :production.
 Bundler.require(*Rails.groups)
@@ -12,8 +11,14 @@ module StockRails
   class Application < Rails::Application
     # Initialize configuration defaults for originally generated Rails version.
     config.load_defaults 5.2
-    # 環境変数が書き変わらないときは"spring stop"シェルコマンド実行https://qiita.com/metafalse/items/7294afa3d1be3315e999
-    Dotenv.load!(Rails.root.join("..", ".env"))
+
+    
+    # TODO dockerコンテナ環境前の環境定義ファイル適用
+    env_path = Rails.root.join("..", ".env")
+    if File.exist?(env_path)
+      # 環境変数が書き変わらないときは"spring stop"シェルコマンド実行https://qiita.com/metafalse/items/7294afa3d1be3315e999
+      Dotenv.load! env_path
+    end
 
     # Settings in config/environments/* take precedence over those specified here.
     # Application configuration can go into files in config/initializers
@@ -38,6 +43,8 @@ module StockRails
     config.log_formatter = proc do |severity, datetime, progname, msg|
       "[#{severity}]#{datetime}: #{progname} : #{msg}\n"
     end
-    config.logger = Logger.new("/var/log/app/stock_container/stock_rails/#{Rails.env}.log", "daily")
+    custom_log_dir = "/var/log/app/stock_container/stock_rails"
+    log_dir = File.exist?(custom_log_dir) ? custom_log_dir : "log"
+    config.logger = Logger.new("#{log_dir}/#{Rails.env}.log", "daily")
   end
 end

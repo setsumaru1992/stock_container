@@ -1,0 +1,28 @@
+version: '3'
+services:
+  stock_rails:
+    container_name: stock_rails
+    build: ./stock_rails
+    command: "/root/stock_rails/entrypoint.sh"
+    ports:
+      - "18090:18090"
+    env_file: /etc/opt/app_setting_files/stock_container/.env
+    volumes:
+      - ./stock_rails:/root/stock_rails
+      - /var/log/app/stock_container/stock_rails:/root/stock_rails/log
+    depends_on:
+      - stock_chrome
+
+  stock_chrome:
+    image: selenium/node-chrome:3.141.59-20200409
+    depends_on:
+      - stock_selenium_hub
+    environment:
+      - HUB_HOST=stock_selenium_hub
+      - HUB_PORT=4444
+  
+  stock_selenium_hub:
+    image: selenium/hub:3.141.59-20200409
+    container_name: stock_selenium_hub
+    ports:
+      - "4444:4444"

@@ -58,7 +58,13 @@ module WebAccessor
       client = Selenium::WebDriver::Remote::Http::Default.new
       client.open_timeout = 300
       client.read_timeout = 300
-      Selenium::WebDriver.for(:chrome, options: options, :http_client => client)
+      
+      # TODO Dockerで一時的に動かしている環境を本番としているため毎回Dockerで動くときには分岐外す
+      if Rails.env.production?
+        ::Selenium::WebDriver.for :remote,  url: "http://stock_selenium_hub:4444/wd/hub", desired_capabilities: :chrome
+      else
+        Selenium::WebDriver.for(:chrome, options: options, :http_client => client)
+      end
     end
 
     def headless?
