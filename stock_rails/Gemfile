@@ -67,8 +67,6 @@ group :development do
   # Spring speeds up development by keeping your application running in the background. Read more: https://github.com/rails/spring
   gem 'spring'
   gem 'spring-watcher-listen', '~> 2.0.0'
-  # TODO Dockerを特別な環境以外でも使うようになったらproduction以外でも入れる
-  gem 'mini_racer', platforms: :ruby
 end
 
 group :test do
@@ -79,6 +77,7 @@ end
 group :production do
   # Easy installation and use of chromedriver to run system tests with Chrome
   # See https://github.com/rails/execjs#readme for more supported runtimes
+  # TODO Dockerを特別な環境以外でも使うようになったらproduction以外でも入れる
   gem 'mini_racer', platforms: :ruby
 end
 
