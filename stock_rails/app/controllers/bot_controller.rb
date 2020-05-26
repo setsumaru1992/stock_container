@@ -51,7 +51,7 @@ class BotController < ApplicationController
 
   def notice_bought_stock_prices
     response = default_responce
-    BotApplicationService.notice_bought_stock_prices(user_id_from(bot_params[:api_key]))
+    BotApplicationService.notice_bought_stocks_with_chart(user_id_from(bot_params[:api_key]))
     render json: response
   end
 

@@ -11,4 +11,6 @@ ARG appname=stock_rails
 ARG apppath="/root/$appname"
 WORKDIR $apppath
 
+# 実行権限が剥奪されているので付け直し
+RUN chmod +x entrypoint.sh
 CMD [ "./entrypoint.sh" ]
