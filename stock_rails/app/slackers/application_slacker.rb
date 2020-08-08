@@ -21,7 +21,7 @@ class ApplicationSlacker
 
   def parse_image_path_to_image_url(image_path)
     path = image_path.gsub("/var/opt/stock_container/", "")
-    "https://kibotsu.com/stockapp/#{path}"
+    "http://153.126.209.119/stockapp/#{path}"
   end
 
 end
