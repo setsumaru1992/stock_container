@@ -3,7 +3,7 @@ services:
   stock_rails:
     container_name: stock_rails
     build: ./stock_rails
-    command: "/root/stock_rails/entrypoint.sh"
+    command: bash -c "chmod +x /root/stock_rails/entrypoint.sh && /root/stock_rails/entrypoint.sh"
     ports:
       - "18090:18090"
     env_file: /etc/opt/app_setting_files/stock_container/.env
