@@ -12,5 +12,6 @@ ARG apppath="/root/$appname"
 WORKDIR $apppath
 
 # 実行権限が剥奪されているので付け直し
+COPY entrypoint.sh ./
 RUN chmod +x entrypoint.sh
 CMD [ "./entrypoint.sh" ]
