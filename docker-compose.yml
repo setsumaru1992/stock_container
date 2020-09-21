@@ -10,6 +10,7 @@ services:
     volumes:
       - ./stock_rails:/root/stock_rails
       - /var/log/app/stock_container/stock_rails:/root/stock_rails/log
+      - /var/opt/stock_container/chart_images:/var/opt/stock_container/chart_images
     depends_on:
       - stock_chrome
 

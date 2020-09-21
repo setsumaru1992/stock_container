@@ -20,7 +20,7 @@ module WebAccessor
     #     - ブロック外の値を使うとしても、ブロック内で"="で丸々置き換えて、そのブロックで独立した値を使えるようにする
     #       - ブロック内の値をメソッドの返り値として返却するためにブロック外で変数定義する場合
     def access(pre_access_params: {}, post_access_params: {}, &process)
-      max_retry_count = 5
+      max_retry_count = 1
       retry_count = 0
       begin
         if @accessor.nil?
@@ -30,7 +30,7 @@ module WebAccessor
         yield(@accessor)
         post_access(@accessor, post_access_params) if need_close?
       rescue => e
-        if false && retry_count < max_retry_count
+        if retry_count < max_retry_count
           Rails.logger.warn(e)
           retry_count += 1
           Rails.logger.warn("リトライ #{retry_count}/#{max_retry_count}")
@@ -40,6 +40,7 @@ module WebAccessor
           screenshot_path = Rails.root.join("tmp", "error_crawl_#{Time.now.strftime("%Y%m%d%H%M%S")}.png")
           @accessor.save_screenshot(screenshot_path) if @accessor.present?
           Rails.logger.error("スクレイピングエラー発生。#{screenshot_path}にスクリーンショットを保存しました。")
+          @accessor.quit # 閉じない設定でもエラー時は特別。
           raise e
         end
       ensure
@@ -61,7 +62,13 @@ module WebAccessor
       
       # TODO Dockerで一時的に動かしている環境を本番としているため毎回Dockerで動くときには分岐外す
       if Rails.env.production?
-        ::Selenium::WebDriver.for :remote,  url: "http://stock_selenium_hub:4444/wd/hub", desired_capabilities: :chrome
+        ::Selenium::WebDriver.for(
+          :remote, 
+          url: "http://stock_selenium_hub:4444/wd/hub", 
+          desired_capabilities: :chrome,
+          options: options, 
+          http_client: client,
+        )
       else
         Selenium::WebDriver.for(:chrome, options: options, :http_client => client)
       end

@@ -11,7 +11,12 @@ Rails.application.routes.draw do
       get 'stock_category/list'
     end
 
-    get "debug/debug"
+    scope :debug do
+      root to: "debug#debug"
+      get "google_scrape", to: "debug#google_scrape"
+      get "web_accsessor_scrape", to: "debug#web_accsessor_scrape"
+      get "sbi_scrape", to: "debug#sbi_scrape"
+    end 
 
     devise_for :users, :controllers => {
       :registrations => 'users/registrations',
