@@ -20,7 +20,7 @@ module WebAccessor
     #     - ブロック外の値を使うとしても、ブロック内で"="で丸々置き換えて、そのブロックで独立した値を使えるようにする
     #       - ブロック内の値をメソッドの返り値として返却するためにブロック外で変数定義する場合
     def access(pre_access_params: {}, post_access_params: {}, &process)
-      max_retry_count = 1
+      max_retry_count = 0 # 1
       retry_count = 0
       begin
         if @accessor.nil?
