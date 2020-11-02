@@ -91,7 +91,14 @@ module WebAccessor
     end
 
     def accessor_is_used_now?
-      !@accessor.remote_status["ready"]
+      if @accessor.respond_to?(:remote_status)
+        # コンテナ環境の場合
+        return !@accessor.remote_status["ready"]
+      # elsif true
+      #   return
+      else
+        return true
+      end
     end
 
     def read_env_bool_value(env_key)
