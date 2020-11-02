@@ -40,11 +40,11 @@ module WebAccessor
           screenshot_path = Rails.root.join("tmp", "error_crawl_#{Time.now.strftime("%Y%m%d%H%M%S")}.png")
           @accessor.save_screenshot(screenshot_path) if @accessor.present?
           Rails.logger.error("スクレイピングエラー発生。#{screenshot_path}にスクリーンショットを保存しました。")
-          @accessor.quit # 閉じない設定でもエラー時は特別。
+          terminate_accessor # 閉じない設定でもエラー時は特別。
           raise e
         end
       ensure
-        @accessor.quit if need_close? && @close_each_access
+        terminate_accessor if need_close? && @close_each_access
       end
     end
 
@@ -81,6 +81,17 @@ module WebAccessor
     def need_close?
       return false if @accessor.nil?
       read_env_bool_value("REQUIRE_CLOSE_BROWSER")
+    end
+
+    def terminate_accessor
+      return if @accessor.blank?
+
+      @accessor.quit if accessor_is_used_now?
+      @accessor = nil
+    end
+
+    def accessor_is_used_now?
+      !@accessor.remote_status["ready"]
     end
 
     def read_env_bool_value(env_key)
