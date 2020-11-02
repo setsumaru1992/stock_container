@@ -94,9 +94,8 @@ module WebAccessor
       if @accessor.respond_to?(:remote_status)
         # コンテナ環境の場合
         return !@accessor.remote_status["ready"]
-      # elsif true
-      #   return
       else
+        # FIXME: コンテナ環境以外のLinuxでの直使用時の判定方法があるならそれを使用する
         return true
       end
     end

@@ -53,6 +53,7 @@ module WebAccessor::Sbi
       image_path_and_range_list
     end
 
+    # TODO: Method::ChartImageCreatableのincludeに移行。すべての使用箇所でこのメソッドを使用しなくなったとき
     def get_concated_price_chart_image_path_in_iframe(iframe_xpath, range_keys, image_name, image_dir, image_extension: "jpeg")
       switch_to_iframe(iframe_xpath)
       image_paths = range_keys.map do |range_key|

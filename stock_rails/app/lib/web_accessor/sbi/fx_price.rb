@@ -1,5 +1,7 @@
 module WebAccessor::Sbi
   class FxPrice < Base
+    include ::WebAccessor::Sbi::Method::ChartImageCreatable
+
     def get_price_of_yen_to_usd
       fx_price_value = FxPriceValue.new
 
@@ -19,24 +21,44 @@ module WebAccessor::Sbi
     end
 
     def get_concated_price_chart_image_path
-      range_keys = [
-        ::StockChart::ONE_DAY,
-        ::StockChart::TWO_MONTH,
-        ::StockChart::ONE_YEAR,
-        ::StockChart::FIVE_YEAR,
+      chart_settings = [
+        ChartSetting.new(
+          ChartSetting::Range::ONE_DAY,
+          ChartSetting::ChartUnit::ONE_HOUR,
+          ChartSetting::Technical::FIBONACCI_RETRACEMENT,
+          ChartSetting::Technical::RSI,
+        ),
+        ChartSetting.new(
+          ChartSetting::Range::ONE_MONTH,
+          ChartSetting::ChartUnit::ONE_DAY,
+          ChartSetting::Technical::FIBONACCI_RETRACEMENT,
+          ChartSetting::Technical::RSI,
+        ),
+        ChartSetting.new(
+          ChartSetting::Range::THREE_MONTH,
+          ChartSetting::ChartUnit::ONE_DAY,
+          ChartSetting::Technical::WEIGHTED_MOVING_AVERAGE_2LINE,
+          ChartSetting::Technical::MACD,
+        ),
+        ChartSetting.new(
+          ChartSetting::Range::ONE_YEAR,
+          ChartSetting::ChartUnit::ONE_WEEK,
+          ChartSetting::Technical::WEIGHTED_MOVING_AVERAGE_2LINE,
+          ChartSetting::Technical::MACD,
+        ),
       ]
-      get_concated_price_chart_image_path_of_selected_range(range_keys, "/var/opt/stock_container/chart_images/fx")
+      get_concated_price_chart_image_path_of_selected_range(chart_settings, "/var/opt/stock_container/chart_images/fx")
     end
 
     private
 
-    def get_concated_price_chart_image_path_of_selected_range(range_keys, image_dir)
+    def get_concated_price_chart_image_path_of_selected_range(chart_settings, image_dir)
       image_path = nil
       access do |_|
         visit(yen_to_usd_url)
         image_path = get_concated_price_chart_image_path_in_iframe(
           "//*[@id='idxdtlMultiChart']",
-          range_keys,
+          chart_settings,
           "fx_yen_to_usd",
           image_dir
         )

@@ -43,9 +43,6 @@ class FxSlacker < PriceNoticeSlacker
     <<-EOS
 【円→USD】
 #{current_price_message(v.price, previous_price: v.reference_price)}
-
-#{increased_and_decreaced_price_message(v.price, leverage: 10)}
-TODO: 表示はしているがDBに値登録していないため修正
 #{fx_price_page_url}
     EOS
   end

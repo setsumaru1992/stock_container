@@ -43,6 +43,12 @@ class BotController < ApplicationController
     render json: response
   end
 
+  def notice_fx_prices
+    response = default_responce
+    BotApplicationService.notice_fx_prices
+    render json: response
+  end
+
   def notice_index_prices
     response = default_responce
     BotApplicationService.notice_index_prices
