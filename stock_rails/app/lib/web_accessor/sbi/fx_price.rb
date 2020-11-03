@@ -26,13 +26,13 @@ module WebAccessor::Sbi
           ChartSetting::Range::ONE_DAY,
           ChartSetting::ChartUnit::ONE_HOUR,
           ChartSetting::Technical::FIBONACCI_RETRACEMENT,
-          ChartSetting::Technical::RSI,
+          ChartSetting::Technical::RCI,
         ),
         ChartSetting.new(
           ChartSetting::Range::ONE_MONTH,
           ChartSetting::ChartUnit::ONE_DAY,
           ChartSetting::Technical::FIBONACCI_RETRACEMENT,
-          ChartSetting::Technical::RSI,
+          ChartSetting::Technical::RCI,
         ),
         ChartSetting.new(
           ChartSetting::Range::THREE_MONTH,
