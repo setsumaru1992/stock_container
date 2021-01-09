@@ -1,19 +1,19 @@
 module ImageManager
   class Base
     BUCKET_NAME = ENV["BUCKET_NAME"]
+    S3_BUCKET_DIRECTORY_URL = "https://kibotsu-stock-images.s3-ap-northeast-1.amazonaws.com"
 
     class << self
-      # def download
-      # end
-
-      def upload(filepath)
-        filename = "hoge.txt"
-        File.open(filepath) do |file|
-          client.put_object(bucket: BUCKET_NAME, key: filename, body: file) 
-        end
-      end
 
       private
+      # def download_to_s3
+      # end
+
+      def upload_to_s3(upload_source_path, upload_destination_path)
+        File.open(upload_source_path) do |file|
+          client.put_object(bucket: BUCKET_NAME, key: upload_destination_path, body: file) 
+        end
+      end
 
       def client
         Aws::S3::Client.new(

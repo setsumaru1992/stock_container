@@ -24,6 +24,7 @@ class FxSlacker < PriceNoticeSlacker
     fx_values.each do |value|
       begin
         notice_with_image(fx_message(value), parse_image_path_to_image_url(value.fx_price_value.chart_path))
+        notice_with_image("S3テスト", ::ImageManager::FxChart::YenToUsdInShortTerm::IMAGE_URL)
       rescue => e
         ErrorSlacker.new.notice_error(e)
         notice("エラー発生")
