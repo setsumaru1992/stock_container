@@ -62,6 +62,15 @@ class BotApplicationService
       nil
     end
 
+    def update_fx_chart_image
+      ::FxDomain::Entity.update_chart_image
+    rescue => e
+      Rails.logger.error(e)
+      ErrorSlacker.new.notice_error(e)
+      StockSlacker.new.notice("update_fx_chart_imageでエラー発生")
+      nil
+    end
+
     def notice_metal_prices
       metal_prices = ::MetalDomain::Entity.get_gold_price #(need_chart: true)
       metal_slack_values = ::MetalSlacker.build_metal_slack_values(metal_prices)

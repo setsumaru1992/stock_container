@@ -49,6 +49,12 @@ class BotController < ApplicationController
     render json: response
   end
 
+  def update_fx_chart_image
+    response = default_responce
+    BotApplicationService.update_fx_chart_image
+    render json: response
+  end
+
   def notice_index_prices
     response = default_responce
     BotApplicationService.notice_index_prices
