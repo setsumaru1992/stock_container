@@ -18,6 +18,8 @@ gem 'devise'
 gem 'mini_magick'
 gem 'carrierwave'
 
+gem 'aws-sdk'
+
 # rails console をpryにするため
 gem "pry-rails"
 gem "pry-byebug"
