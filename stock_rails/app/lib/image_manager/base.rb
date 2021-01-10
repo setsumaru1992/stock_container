@@ -11,7 +11,13 @@ module ImageManager
 
       def upload_to_s3(upload_source_path, upload_destination_path)
         File.open(upload_source_path) do |file|
-          client.put_object(bucket: BUCKET_NAME, key: upload_destination_path, body: file) 
+          client.put_object(
+            bucket: BUCKET_NAME, 
+            key: upload_destination_path, 
+            body: file,
+            cache_control: "no-cache",
+            acl: "public-read"
+          ) 
         end
       end
 
