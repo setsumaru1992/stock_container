@@ -1,12 +1,16 @@
 module WebAccessor::Sbi
   module Method::ChartImageCreatable
     def get_concated_price_chart_image_path_in_iframe(iframe_xpath, chart_settings, image_name, image_dir, image_extension: "jpeg")
+      image_paths = get_price_chart_image_paths_in_iframe(iframe_xpath, chart_settings, image_name, image_dir, image_extension: image_extension)
+      return image_paths.first if image_paths.size == 1
+      ImageManager::Base.concate_images(image_paths, unique_path("#{image_dir}/#{image_name}.#{image_extension}"))
+    end
+
+    def get_price_chart_image_paths_in_iframe(iframe_xpath, chart_settings, image_name, image_dir, image_extension: "jpeg")
       switch_to_iframe(iframe_xpath)
-      image_paths = chart_settings.map do |chart_setting|
+      chart_settings.map do |chart_setting|
         get_price_chart_image_path_in_iframe(chart_setting, image_dir, image_name, image_extension)
       end
-      return image_paths.first if image_paths.size == 1
-      concate_images(image_paths, unique_path("#{image_dir}/#{image_name}.#{image_extension}"))
     end
 
     def get_price_chart_image_path_in_iframe(chart_setting, image_dir, image_name, image_extension)

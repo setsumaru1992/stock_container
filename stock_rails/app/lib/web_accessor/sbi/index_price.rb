@@ -33,6 +33,13 @@ module WebAccessor
         get_concated_price_chart_image_path(index_code, range_keys, "/var/opt/stock_container/chart_images/indexes")
       end
 
+      def get_concated_price_chart_image_path_of_nikkei_and_dow
+        range_keys = [
+          ::StockChart::ONE_YEAR,
+          ::StockChart::FIVE_YEAR,
+        ]
+      end
+
       private
 
       def get_concated_price_chart_image_path(index_code, range_keys, image_dir)
