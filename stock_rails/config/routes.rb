@@ -33,6 +33,7 @@ Rails.application.routes.draw do
       get "notice_bought_stock_prices"
       get "notice_bought_and_favorite_stocks_with_chart"
       get "notice_index_prices"
+      get "update_nikkei_and_dow_index_chart_image"
       get "notice_fx_prices"
       get "update_fx_chart_image"
       get "notice_important_prices"

@@ -61,6 +61,12 @@ class BotController < ApplicationController
     render json: response
   end
 
+  def update_nikkei_and_dow_index_chart_image
+    response = default_responce
+    BotApplicationService.update_nikkei_and_dow_index_chart_image
+    render json: response
+  end
+
   def notice_bought_stock_prices
     response = default_responce
     BotApplicationService.notice_bought_stocks_with_chart(user_id_from(bot_params[:api_key]))

@@ -15,6 +15,16 @@ module IndexDomain
         web_accessor.close
         index_prices
       end
+
+      def update_chart_image
+        web_accessor = ::WebAccessor::Sbi::IndexPrice.new
+        image_dir = Rails.root.join("tmp")
+        image_paths = web_accessor.get_price_chart_image_paths_of_nikkei_and_dow(image_dir)
+        concated_image_path = "#{image_dir}/#{"index_chart_nikkei_and_dow.jpeg"}"
+        ::ImageManager::Base.concate_images(image_paths, concated_image_path)
+        ::ImageManager::FxChart::NikkeiAndDowInLongTerm.upload(concated_image_path)
+        ::FileUtils.rm(concated_image_path)
+      end
     end
   end
 end

@@ -51,6 +51,15 @@ class BotApplicationService
       nil
     end
 
+    def update_nikkei_and_dow_index_chart_image
+      ::IndexDomain::Entity.update_chart_image
+    rescue => e
+      Rails.logger.error(e)
+      ErrorSlacker.new.notice_error(e)
+      StockSlacker.new.notice("update_nikkei_and_dow_index_chart_imageでエラー発生")
+      nil
+    end
+
     def notice_fx_prices
       fx_prices = ::FxDomain::Entity.get_fx_prices(need_chart: true)
       fx_slack_values = ::FxSlacker.build_fx_slack_values(fx_prices)

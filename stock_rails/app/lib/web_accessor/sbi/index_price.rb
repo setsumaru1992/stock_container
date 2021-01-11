@@ -1,6 +1,8 @@
 module WebAccessor
   module Sbi
     class IndexPrice < Base
+      include ::WebAccessor::Sbi::Method::ChartImageCreatable
+
       def get_price_of(index_code)
         index_price_value = IndexPriceValue.new
         index_price_value.code = index_code
@@ -24,31 +26,78 @@ module WebAccessor
       end
 
       def get_concated_price_chart_image_path_of(index_code)
-        range_keys = [
-          ::StockChart::ONE_DAY,
-          ::StockChart::TWO_MONTH,
-          ::StockChart::ONE_YEAR,
-          ::StockChart::FIVE_YEAR,
+        chart_settings = [
+          ChartSetting.new(
+            ChartSetting::Range::ONE_DAY,
+            ChartSetting::ChartUnit::ONE_HOUR,
+            ChartSetting::Technical::WEIGHTED_MOVING_AVERAGE_2LINE,
+            ChartSetting::Technical::MACD,
+          ),
+          ChartSetting.new(
+            ChartSetting::Range::TWO_MONTH,
+            ChartSetting::ChartUnit::ONE_DAY,
+            ChartSetting::Technical::WEIGHTED_MOVING_AVERAGE_2LINE,
+            ChartSetting::Technical::MACD,
+          ),
+          ChartSetting.new(
+            ChartSetting::Range::ONE_YEAR,
+            ChartSetting::ChartUnit::ONE_DAY,
+            ChartSetting::Technical::WEIGHTED_MOVING_AVERAGE_2LINE,
+            ChartSetting::Technical::MACD,
+          ),
+          ChartSetting.new(
+            ChartSetting::Range::FIVE_YEAR,
+            ChartSetting::ChartUnit::ONE_WEEK,
+            ChartSetting::Technical::WEIGHTED_MOVING_AVERAGE_2LINE,
+            ChartSetting::Technical::MACD,
+          ),
         ]
-        get_concated_price_chart_image_path(index_code, range_keys, "/var/opt/stock_container/chart_images/indexes")
+        get_concated_price_chart_image_path_of_selected_range(index_code, chart_settings, "/var/opt/stock_container/chart_images/indexes")
       end
 
-      def get_concated_price_chart_image_path_of_nikkei_and_dow
-        range_keys = [
-          ::StockChart::ONE_YEAR,
-          ::StockChart::FIVE_YEAR,
+      def get_price_chart_image_paths_of_nikkei_and_dow(image_dir)
+        chart_settings = [
+          ChartSetting.new(
+            ChartSetting::Range::ONE_YEAR,
+            ChartSetting::ChartUnit::ONE_DAY,
+            ChartSetting::Technical::WEIGHTED_MOVING_AVERAGE_2LINE,
+            ChartSetting::Technical::MACD,
+          ),
+          ChartSetting.new(
+            ChartSetting::Range::TEN_YEAR,
+            ChartSetting::ChartUnit::ONE_MONTH,
+            ChartSetting::Technical::WEIGHTED_MOVING_AVERAGE_2LINE,
+            ChartSetting::Technical::MACD,
+          ),
         ]
+
+        image_paths = [
+          ::IndexDomain::Codes::NIKKEI_AVERAGE,
+          ::IndexDomain::Codes::DOW_AVERAGE
+        ].map do |index_code|
+          image_paths_of_index_code = nil
+          access do |_|
+            visit(index_price_page_url_of(index_code))
+            image_paths_of_index_code = get_price_chart_image_paths_in_iframe(
+              "//*[@id='idxdtlMultiChart']",
+              chart_settings,
+              "index_#{index_code}",
+              image_dir
+            )
+          end
+          image_paths_of_index_code
+        end.flatten
       end
 
       private
 
-      def get_concated_price_chart_image_path(index_code, range_keys, image_dir)
+      def get_concated_price_chart_image_path_of_selected_range(index_code, chart_settings, image_dir)
         image_path = nil
-        access do |accessor|
+        access do |_|
           visit(index_price_page_url_of(index_code))
           image_path = get_concated_price_chart_image_path_in_iframe(
             "//*[@id='idxdtlMultiChart']",
-            range_keys,
+            chart_settings,
             "index_#{index_code}",
             image_dir
           )
