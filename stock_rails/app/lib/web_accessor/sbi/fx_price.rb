@@ -23,16 +23,16 @@ module WebAccessor::Sbi
     def get_concated_price_chart_image_path
       chart_settings = [
         ChartSetting.new(
-          ChartSetting::Range::ONE_DAY,
+          ChartSetting::Range::THREE_DAY,
           ChartSetting::ChartUnit::ONE_HOUR,
           ChartSetting::Technical::FIBONACCI_RETRACEMENT,
-          ChartSetting::Technical::RCI,
+          ChartSetting::Technical::DMI,
         ),
         ChartSetting.new(
-          ChartSetting::Range::ONE_MONTH,
+          ChartSetting::Range::THREE_MONTH,
           ChartSetting::ChartUnit::ONE_DAY,
           ChartSetting::Technical::FIBONACCI_RETRACEMENT,
-          ChartSetting::Technical::RCI,
+          ChartSetting::Technical::DMI,
         ),
         ChartSetting.new(
           ChartSetting::Range::THREE_MONTH,
