@@ -60,7 +60,7 @@ module WebAccessor::Sbi
         get_price_chart_image_path_in_iframe(range_key, image_dir, image_name, image_extension)
       end
       return image_paths.first if image_paths.size == 1
-      concate_images(image_paths, unique_path("#{image_dir}/#{image_name}.#{image_extension}"))
+      ImageManager::Base.concate_images(image_paths, unique_path("#{image_dir}/#{image_name}.#{image_extension}"))
     end
 
     def get_price_chart_image_path_in_iframe(range_key, image_dir, image_name, image_extension)
@@ -77,7 +77,7 @@ module WebAccessor::Sbi
     end
 
     def download_image_from(url, image_path, download_extension)
-      image_extension = extension_of(image_path)
+      image_extension = ImageManager::Base.extension_of(image_path)
       download_filepath = if download_extension == image_extension
         image_path
       else
@@ -88,28 +88,11 @@ module WebAccessor::Sbi
         image.puts(Net::HTTP.get_response(URI.parse(url)).body)
       end
 
-      return image_path if download_extension == image_extension
-      image = MiniMagick::Image.open(download_filepath)
-      image.format(image_extension)
-      image.write(image_path)
-      FileUtils.rm(download_filepath)
-      image_path
-    end
-
-    def concate_images(image_paths, save_path)
-      MiniMagick::Tool::Convert.new do |convert|
-        convert.append.-
-        image_paths.each do |image_path|
-          convert << image_path
-        end
-        convert << save_path
+      if download_extension == image_extension
+        image_path
+      else
+        ImageManager::Base.convert_extention(download_filepath, image_extension)
       end
-
-      image_paths.each do |image_path|
-        FileUtils.rm(image_path)
-      end
-
-      save_path
     end
 
     def unique_path(path)
@@ -119,10 +102,6 @@ module WebAccessor::Sbi
 
     def milli_seconds
       Time.now.strftime('%s%L').to_i
-    end
-
-    def extension_of(path)
-      path.match(/\.([a-z]+)$/)[1]
     end
   end
 end
