@@ -13,6 +13,7 @@ module FxDomain
       end
 
       def update_chart_image
+        web_accessor = ::WebAccessor::Sbi::FxPrice.new
         image_path = web_accessor.get_concated_price_chart_image_path
         ::ImageManager::FxChart::YenToUsdInShortTerm.upload(image_path)
       end
