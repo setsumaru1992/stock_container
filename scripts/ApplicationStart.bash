@@ -1,6 +1,6 @@
 #!/bin/bash -e
 
-cd /opt/app/fortune_calculator
+cd /opt/app/stock_container
 sudo systemctl start docker
 
 sudo git pull
